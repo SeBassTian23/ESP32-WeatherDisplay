@@ -557,6 +557,8 @@ void drawSummary()
   Serial.println(summary);
   Serial.println(summaryDay);
   drawCurrentIcon(193,0,152, icon);
+  int16_t  x0, y0;
+  uint16_t w, h;
   int y1 = 15;
   int y2 = y1+45;
   int y3 = y2+45;
@@ -583,33 +585,75 @@ void drawSummary()
 
   display.setFont();
   display.setCursor(364,y1);
-  display.print("Temperature/Feels");
+  display.print("Min");
   display.setCursor(364,y2);
   display.print("Humidity");
   display.setCursor(364,y3);
   display.print("UV-Index");
 
-  display.setCursor(510,y1);
-  display.print("Min/Max");
+  display.setCursor(578,y1);
+  display.print("Max");
   display.setCursor(510,y2);
   display.print("Pressure");
   display.setCursor(510,y3);
   display.print("Ozone");
 
-  display.setFont(&OpenSans_Regular14pt7b);
+  display.setFont(&OpenSans_Regular22pt7b);
   display.setCursor(369,y1+30);
-  display.print(String(lrint(temperature)) + "/" + lrint(apparentTemperature));
+
+  // Set the Current Temperature
+  textCenter(display, 482, y1+30, String(lrint(temperature)));
+  display.getTextBounds(String(lrint(temperature)), 482, y1+30, &x0, &y0, &w, &h);
+  display.drawCircle( 482+(w/2)+9, y1+3, 3, GxEPD_BLACK);
+
+  // Set the Apparent Temperature
+  display.setFont();
+  display.setCursor(482+(w/2)+8,y1+24);
+  display.print( String(lrint(apparentTemperature)) );
+
+  // Add Humidity Value
+  display.setFont(&OpenSans_Regular14pt7b);
   display.setCursor(369,y2+30);
   display.print(String(lrint(humidity*100)));
+  display.getTextBounds(String(lrint(humidity*100)), 369, y2+30, &x0, &y0, &w, &h);
+  display.setFont();
+  display.setCursor(369+w+6,y2+24);
+  display.print("%");
+
+  // Add UV Index Value
+  display.setFont(&OpenSans_Regular14pt7b);
   display.setCursor(369,y3+30);
   display.print(String(lrint(uvIndex)));
 
-  display.setCursor(515,y1+30);
-  display.print(String(lrint(temperatureMin)) + "/" + String(lrint(temperatureMax)));
+  // Minimum Temperature
+  display.setFont(&OpenSans_Regular14pt7b);
+  display.setCursor(369,y1+30);
+  display.print(String(lrint(temperatureMin)));
+  display.getTextBounds(String(lrint(temperatureMin)), 369, y1+30, &x0, &y0, &w, &h);
+  display.drawCircle( 369+w+6, y1+15, 2, GxEPD_BLACK);
+
+  // Maximum Temperature
+  display.setFont(&OpenSans_Regular14pt7b);
+  textRight(display, 610, y1+30, String(lrint(temperatureMax)));
+  display.drawCircle( 610+6, y1+15, 2, GxEPD_BLACK);
+
+  // Add Pressure Value
+  display.setFont(&OpenSans_Regular14pt7b);
   display.setCursor(515,y2+30);
   display.print(String(lrint(pressure)));
+  display.getTextBounds(String(lrint(pressure)), 515, y2+30, &x0, &y0, &w, &h);
+  display.setFont();
+  display.setCursor(515+w+6,y2+24);
+  display.print("hPa");
+
+  // Add Ozone Value
+  display.setFont(&OpenSans_Regular14pt7b);
   display.setCursor(515,y3+30);
   display.print(String(lrint(ozone)));
+  display.getTextBounds(String(lrint(ozone)), 515, y3+30, &x0, &y0, &w, &h);
+  display.setFont();
+  display.setCursor(515+w+6,y3+24);
+  display.print("DU");
 }
 
 /* Weather Alert */
