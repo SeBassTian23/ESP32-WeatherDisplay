@@ -527,3 +527,13 @@ void iconMoonPhase(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t r, floa
   display.drawPixel(x-r+17, y-r+31, GxEPD_BLACK);
 
 }
+
+void iconBatteryEmpty( GxEPD2_GFX& display, float voltage, int adc)
+{
+  display.drawRect(5, 5, 12, 7, GxEPD_BLACK);
+  display.drawRect(4, 6, 1, 5, GxEPD_BLACK);
+  display.fillRect(13, 5, 3, 7, GxEPD_BLACK);
+  display.setFont();
+  display.setCursor(19,5);
+  display.print(String(voltage) + "V " + adc);
+}
