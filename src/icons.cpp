@@ -249,16 +249,15 @@ void iconSunRise(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction)
   // Remove lines inside
   display.fillCircle(x, y, r + 1, GxEPD_WHITE);
   // Empty inside
+  display.fillCircle(x, y, r-1, GxEPD_RED);
   display.drawCircle(x, y, r-1, GxEPD_BLACK);
   // Overwrite the bottom
   display.fillRect(x - r, y + 4, r*2, r, GxEPD_WHITE);
-  // Horizon line
-  display.drawLine( x-r, y+r-2, x-r/2, y+r-2, GxEPD_BLACK);
-  display.drawLine( x+r/2, y+r-2, x+r, y+r-2, GxEPD_BLACK);
   
   // Arrow up
   if(direction == "up")
   {
+    display.fillTriangle( x-r/2-1, y+r-2, x, y+r - 7, x+r/2+1, y+r-2, GxEPD_WHITE);
     display.drawLine( x-r/2, y+r-2, x, y+r - 6, GxEPD_BLACK);
     display.drawLine( x, y+r - 6, x+r/2, y+r-2, GxEPD_BLACK);
   }
@@ -268,6 +267,9 @@ void iconSunRise(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction)
     display.drawLine( x-r/2, y+r-2, x, y+r + 2, GxEPD_BLACK);
     display.drawLine( x, y+r + 2, x+r/2, y+r-2, GxEPD_BLACK);
   }
+  // Horizon line
+  display.drawLine( x-r, y+r-2, x-r/2, y+r-2, GxEPD_BLACK);
+  display.drawLine( x+r/2, y+r-2, x+r, y+r-2, GxEPD_BLACK);
 }
 
 // 0 = new moon
