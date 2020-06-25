@@ -241,9 +241,9 @@ bool httpsRequest(WiFiClient& client, int req)
   // close connection before sending a new request
   client.stop();
   HTTPClient http;
-  String uri = "/forecast/" + apikey + "/" + longitude + "," + latitude + "?exclude=" + exclude + "&units=" + units;
+  String uri = "/forecast/" + apikey + "/" + longitude + "," + latitude + "?exclude=" + exclude + "&units=" + units + "&lang=" + language;
   if(req == 2)
-    uri = "/forecast/" + apikey + "/" + longitude + "," + latitude + "?exclude=" + excludeHour + "&units=" + units;
+    uri = "/forecast/" + apikey + "/" + longitude + "," + latitude + "?exclude=" + excludeHour + "&units=" + units + "&lang=" + language;
   http.begin(client, server, 443, uri);
   int httpCode = http.GET();
   if(httpCode == HTTP_CODE_OK) {
