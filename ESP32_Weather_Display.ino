@@ -120,8 +120,8 @@ float         uvIndex;
 float         ozone;
 float         temperatureMin;
 float         temperatureMax;
-float         sunriseTime;
-float         sunsetTime;
+time_t        sunriseTime;
+time_t        sunsetTime;
 float         moonPhase;
 
 /* Inside Sensor Parameters */
