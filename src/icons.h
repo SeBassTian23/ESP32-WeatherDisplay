@@ -26,4 +26,6 @@ void iconTornado(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s);
 void iconSunRise(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction);
 void iconMoonPhase(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t r, float phase);
 
+void iconHouse(GxEPD2_GFX& display, String timeofday);
+
 void iconBatteryEmpty( GxEPD2_GFX& display, float voltage, int adc);

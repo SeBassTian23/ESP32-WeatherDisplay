@@ -528,6 +528,53 @@ void iconMoonPhase(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t r, floa
 
 }
 
+void iconHouse(GxEPD2_GFX& display, String timeofday)
+{
+  // house
+  display.drawRect(22, 280, 20, 12, GxEPD_BLACK);
+
+  // door
+  display.drawRect(26, 284, 5, 8, GxEPD_BLACK);
+  // door handle
+  display.drawLine(26, 287, 28, 287, GxEPD_BLACK);
+
+  // window
+  if( timeofday == "night")
+    display.fillRect(33, 284, 7, 5, GxEPD_RED); // Window light
+  display.drawRect(33, 284, 7, 5, GxEPD_BLACK);
+  display.drawLine(36, 284, 36, 288, GxEPD_BLACK);
+  
+  // roof
+  display.drawLine(20, 281, 32, 272, GxEPD_BLACK);
+  display.drawLine(32, 272, 43, 281, GxEPD_BLACK);
+
+  display.drawLine(24, 280, 33, 273.5, GxEPD_BLACK);
+  display.drawLine(26.5, 280, 33.5, 275, GxEPD_BLACK);
+  display.drawLine(29, 280, 35, 275.5, GxEPD_BLACK);
+
+  // path and street
+  display.drawLine(26, 292, 30, 296, GxEPD_BLACK);
+  display.drawLine(31, 292, 35, 296, GxEPD_BLACK);
+
+  display.drawLine(20, 296, 30, 296, GxEPD_BLACK);
+  display.drawLine(35, 296, 48, 296, GxEPD_BLACK);
+
+  // street light
+  if( timeofday == "night")
+  {
+    display.fillCircle(46, 285, 2, GxEPD_RED); // Street light
+    display.fillTriangle(46, 283, 42, 294, 50, 294, GxEPD_RED); // Street light
+  }
+  display.drawLine(46, 286, 46, 294, GxEPD_BLACK);
+  display.drawCircle(46, 285, 2, GxEPD_BLACK);
+  display.fillRect(45, 284, 3, 1, GxEPD_BLACK);
+  display.fillRect(45, 292, 3, 3, GxEPD_BLACK);
+
+  // mailbox
+  display.fillRect(23, 293, 3, 1, GxEPD_BLACK);
+  display.drawLine(24, 293, 24, 294, GxEPD_BLACK);
+}
+
 void iconBatteryEmpty( GxEPD2_GFX& display, float voltage, int adc)
 {
   display.drawRect(5, 5, 12, 7, GxEPD_BLACK);
