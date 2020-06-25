@@ -206,6 +206,24 @@ void StopWiFi()
   WiFi.mode(WIFI_OFF);
 }
 
+/* Battery Voltage */
+void battery()
+{
+  ADC_VALUE = analogRead(ADC_PIN);
+  Serial.print("ADC VALUE = ");
+  Serial.println(ADC_VALUE);
+  voltage = (ADC_VALUE * 3.3 ) / (4095.0);
+  voltage = (ADC_VALUE / 4095.0) * 7.46;
+
+  Serial.print("Voltage = ");
+  Serial.println(voltage);
+  // TODO: figure out a good way to
+  // if(voltage < 4.0)
+  // {
+    iconBatteryEmpty(display, voltage, ADC_VALUE);
+  // }
+}
+
 /* Sleep */
 void espSLEEP()
 {
@@ -288,6 +306,7 @@ void buildView()
     drawForcast();
     drawGraphs();
     drawAlert();
+    battery();
   }
   while (display.nextPage());
   espSLEEP();
