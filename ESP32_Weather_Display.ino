@@ -229,6 +229,28 @@ void espSLEEP()
 {
   display.powerOff();
   powerDownSensors();
+  long SleepTimer = SleepDuration * 60;
+
+  struct tm *lt = localtime(&currentTime);
+
+  if(lt->tm_hour >= PowerSaveStart || lt->tm_hour < PowerSaveEnd )
+  {
+    SleepTimer = 7200;
+
+    if( lt->tm_hour < PowerSaveEnd && (lt->tm_hour + ( SleepTimer / 3600 )) > PowerSaveEnd  )
+    {
+        SleepTimer  =  (PowerSaveEnd * 3600) - ( (lt->tm_hour * 3600) + (lt->tm_min * 60) + lt->tm_sec );
+        if( SleepTimer < (SleepDuration * 60) )
+        {
+            SleepTimer = SleepTimer + SleepDuration * 60;
+        }
+    }
+  }
+
+  if(SleepTimer < SleepDuration * 60)
+  {
+    SleepTimer = SleepDuration * 60;
+  }
   esp_sleep_enable_timer_wakeup(SleepTimer * 1000000LL);
 
   Serial.println("Deep-sleep for " + String(SleepTimer) + " seconds");
