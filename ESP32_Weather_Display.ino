@@ -654,8 +654,7 @@ void drawForcast()
   int dist = 90;
   for (byte r = 0; r < max_days; r++) {
     display.setFont();
-    time_t t = Forcast[r].time;
-    struct tm *lt = localtime(&t);
+    struct tm *lt = localtime(&Forcast[r].time);
     char buff[32];
     strftime(buff, 32, "%A",lt);
     textCenter(display,x+(dist*r)+25,185, String(buff));
