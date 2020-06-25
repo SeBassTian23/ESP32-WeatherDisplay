@@ -8,7 +8,7 @@
  * 
  * Display:
  *  - Display: https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_(B)
- *  - Driver: https://github.com/ZinggJM/GxEPD2 (Jean-Marc Zingg)
+ *  - Driver: https://github.com/ZinggJM/GxEPD2 (Jean-Marc Zingg) Version 1.2.3
  * 
  * Other:
  *  - ArduinoJson: https://arduinojson.org/  V6.x or above
@@ -39,6 +39,7 @@
 /* Display Dependencies */
 #include <GxEPD2_BW.h>
 #include <GxEPD2_3C.h>
+#include <U8g2_for_Adafruit_GFX.h>
 
 /* Mapping of Waveshare ESP32 Driver Board */
 GxEPD2_3C<GxEPD2_750c, GxEPD2_750c::HEIGHT> display(GxEPD2_750c(/*CS=*/ 15, /*DC=*/ 27, /*RST=*/ 26, /*BUSY=*/ 25));
@@ -61,7 +62,9 @@ Adafruit_CCS811 ccs;
 Adafruit_BMP280 bmp;
 
 /* Fonts */
+U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 #include "fonts/OpenSans_Regular64pt7b.h"
+#include "fonts/OpenSans_Regular22pt7b.h"
 #include "fonts/OpenSans_Regular14pt7b.h"
 #include "fonts/OpenSans_Regular8pt7b.h"
 
