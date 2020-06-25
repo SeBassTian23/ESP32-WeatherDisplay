@@ -485,34 +485,32 @@ void weekdayDisplay()
 void phasesSunMoon()
 {
   // Sun Rise Icon
-  iconSunRise(display, 20, 210, "up");
+  iconSunRise(display, 20, 215, "up");
 
   // Sun Set Icon
-  iconSunRise(display, 20, 235, "down");
+  iconSunRise(display, 20, 240, "down");
 
   // Sunrise Time
-  time_t t = sunriseTime;
-  struct tm *lt = localtime(&t);
+  struct tm *lt = localtime(&sunriseTime);
   char buff[32];
   display.setTextColor(GxEPD_BLACK);
   display.setFont(&OpenSans_Regular8pt7b);
   strftime(buff, 32, "%I:%M %p",lt);
-  display.setCursor(40, 213);
+  display.setCursor(40, 218);
   display.print(buff);
   Serial.println(buff);
 
   // Sunset Time
-  t = sunsetTime;
-  lt = localtime(&t);
+  lt = localtime(&sunsetTime);
   display.setTextColor(GxEPD_BLACK);
   display.setFont(&OpenSans_Regular8pt7b);
   strftime(buff, 32, "%I:%M %p",lt);
-  display.setCursor(40, 240);
+  display.setCursor(40, 245);
   display.print(buff);
   Serial.println(buff);
 
   // Moon Icon
-  iconMoonPhase(display, 160, 220, 18, moonPhase);
+  iconMoonPhase(display, 155, 224, 18, moonPhase);
 }
 
 /* Current Weather Icon */
