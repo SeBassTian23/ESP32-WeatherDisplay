@@ -61,6 +61,13 @@ HTU21D humiditySensor;
 Adafruit_CCS811 ccs;
 Adafruit_BMP280 bmp;
 
+
+/* Power Management */
+const int ADC_PIN = 34;
+const int POWER_SWITCH_PIN = 4;
+int ADC_VALUE = 0;
+float voltage = 0.0; 
+
 /* Fonts */
 U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 #include "fonts/OpenSans_Regular64pt7b.h"
@@ -143,6 +150,10 @@ void setup()
   // map and init SPI pins SCK(13), MISO(12), MOSI(14), SS(15)
   SPI.begin(13, 12, 14, 15);
 
+  // Power up sensors
+  pinMode(POWER_SWITCH_PIN, OUTPUT);
+  digitalWrite(POWER_SWITCH_PIN, LOW);
+
   // Setup
   humiditySensor.begin();
   ccs.begin();
@@ -199,7 +210,7 @@ void StopWiFi()
 void espSLEEP()
 {
   display.powerOff();
-  long SleepTimer = 1800; //30 min;
+  powerDownSensors();
   esp_sleep_enable_timer_wakeup(SleepTimer * 1000000LL);
 
   Serial.println("Deep-sleep for " + String(SleepTimer) + " seconds");
@@ -403,7 +414,12 @@ void getSensorData()
       Serial.println(insideVOC);
     }
   }
+}
 
+/* Cut Power from Sensors */
+void powerDownSensors()
+{
+  digitalWrite(POWER_SWITCH_PIN, HIGH);
 }
 
 /* Show Indoor Data */
