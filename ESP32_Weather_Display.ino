@@ -431,15 +431,24 @@ void sensorDisplay()
   display.fillRect(20, 260, 152, 2, GxEPD_RED);
 
   // Inside House Icon
-  display.fillTriangle(8,280, 20, 270, 31, 280, GxEPD_BLACK);
-  display.fillRect(10, 280, 20, 12, GxEPD_BLACK);
-  display.fillRect(14, 285, 5, 7, GxEPD_WHITE);
+  struct tm *lt = localtime(&currentTime);
+
+  if(lt->tm_hour >= PowerSaveStart || lt->tm_hour <= PowerSaveEnd )
+  {
+    Serial.println("Night Mode");
+    iconHouse(display, "night");
+  }
+  else
+  {
+    Serial.println("Day Mode");
+    iconHouse(display, "day");
+  }
 
   // Sensor data with units
   display.setTextColor(GxEPD_BLACK);
   display.setFont();
-  display.setCursor(60,270);
-  display.print("Temperature");
+  // display.setCursor(60,270);
+  // display.print("Temperature");
   display.setCursor(20,312);
   display.print("Humidity");
   display.setCursor(110,312);
@@ -448,25 +457,57 @@ void sensorDisplay()
   display.print("VOC");
   display.setCursor(110,347);
   display.print("CO2");
-  display.setFont(&OpenSans_Regular14pt7b);
-  display.setCursor(65,300);
+  
+  int16_t  x1, y1;
+  uint16_t w, h;
+
+  // Display Inside Temperature
+  display.setFont(&OpenSans_Regular22pt7b);
+  display.setCursor(110,300);
   display.print(String(lrint(insideTemperature)));
+  display.getTextBounds(String(lrint(insideTemperature)), 110, 300, &x1, &y1, &w, &h);
+  display.drawCircle( 110+w+11, 273, 3, GxEPD_BLACK);
+  // display.setFont();
+  // display.setCursor(65+w+8,270);
+  // display.print("F");
+
+  // Display Inside Humidity
   display.setFont(&OpenSans_Regular8pt7b);
   display.setCursor(25,335);
   display.print(String(lrint(insideHumidity)));
+  display.getTextBounds(String(lrint(insideHumidity)), 25, 335, &x1, &y1, &w, &h);
+  display.setFont();
+  display.setCursor(25+w+6,329);
+  display.print("%");
+
+  // Display Inside Pressure
+  display.setFont(&OpenSans_Regular8pt7b);
   display.setCursor(115,335);
   display.print(String(lrint(insidePressure)));
+  display.getTextBounds(String(lrint(insidePressure)), 115, 335, &x1, &y1, &w, &h);
+  display.setFont();
+  display.setCursor(115+w+6,329);
+  display.print("hPa");
+
+  display.setFont(&OpenSans_Regular8pt7b);
+  // display.setCursor(25,335);
+  // display.print(String(lrint(insideHumidity)));
+  // display.setCursor(115,335);
+  // display.print(String(lrint(insidePressure)));
   display.setCursor(25,370);
   display.print(String(lrint(insideVOC)));
   display.setCursor(115,370);
   display.print(String(lrint(insideECO2)));
+  display.getTextBounds(String(lrint(insideECO2)), 115, 370, &x1, &y1, &w, &h);
+  display.setFont();
+  display.setCursor(115+w+6,364);
+  display.print("ppm");
 }
 
 /* Dislay Day of the Month and Weekday */
 void weekdayDisplay()
 {
-  time_t t = currentTime;
-  struct tm *lt = localtime(&t);
+  struct tm *lt = localtime(&currentTime);
   char buff[32];
   Serial.print(buff);
   display.setFont();
