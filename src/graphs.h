@@ -16,4 +16,4 @@
 
 #include <GxEPD2_GFX.h>
 
-void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t h, float Data[], float Data2[], float Range[], int len, String title );
+void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t h, float Data[], float Data2[], float Range[], int len, time_t starttime, String title );

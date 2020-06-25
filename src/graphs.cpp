@@ -6,7 +6,7 @@
 #include "text.h"
 #include <math.h> 
 
-void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t h, float Data[], float Data2[], float Range[], int len, String title )
+void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t h, float Data[], float Data2[], float Range[], int len, time_t starttime, String title )
 {
     float ymin;
     float ymax;
@@ -105,8 +105,18 @@ void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t
     }
 
     // x-Axis ticks
+    struct tm *lt;
+    char buff[32];
     for (int i = 0; i <= 4; i++) {
       display.setCursor(x-4+(w/4)*i ,y+h+6);
-      display.print(String(12*i));
+      display.print(String(12*i)+"h");
+      // time_t tt = starttime +(i*12*3600);
+      // lt = localtime(&tt);
+      // strftime(buff, 32, "%I%p",lt);
+      // // strftime(buff, 32, "%H",lt);
+      // if(i>0)
+      // {
+      //   textCenter(display,x-4+(w/4)*i ,y+h+6, String(buff));
+      // }
     }
 }
