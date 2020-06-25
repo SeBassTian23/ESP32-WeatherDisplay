@@ -132,11 +132,11 @@ float         insideVOC;
 float         insideECO2;
 
 /* Alerts Data */
-bool         hasAlert = false;
-time_t       alertStart;
-time_t       alertEnd;
-const char*  alertType;
-const char*  alertTitle;
+bool          hasAlert = false;
+time_t        alertStart;
+time_t        alertEnd;
+const char*   alertType;
+const char*   alertTitle;
 
 /* Setup */
 void setup()
@@ -398,12 +398,23 @@ bool parseDarkSky(String json, int req)
 
     // Forcast
     for (byte r = 0; r < max_days; r++) {
-      Forcast[r].time               = doc["daily"]["data"][r+1]["time"].as<time_t>()+gmtOffset_sec;
+      Forcast[r].time               = doc["daily"]["data"][r+1]["time"].as<time_t>();
       Forcast[r].summary            = doc["daily"]["data"][r+1]["summary"].as<const char*>();  
       Forcast[r].icon               = doc["daily"]["data"][r+1]["icon"].as<const char*>(); 
       Forcast[r].temperatureMin     = doc["daily"]["data"][r+1]["temperatureMin"].as<float>();
       Forcast[r].temperatureMax     = doc["daily"]["data"][r+1]["temperatureMax"].as<float>(); Serial.println("Forcast: "+String(Forcast[r].temperatureMax));
     }
+
+    // Check if it daylight savings (DST)
+    struct tm *lt = localtime(&currentTime);
+    if(lt->tm_isdst > 0)
+    {
+      gmtOffset_sec += 3600;
+      currentTime += 3600;
+    }
+    Serial.print("DST: ");
+    Serial.println(lt->tm_isdst);
+
   }
   else if(req == 2)
   {
