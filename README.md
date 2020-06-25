@@ -2,7 +2,13 @@
 
 > 7.5 in three color eInk Display, showing the current weather and five day forecast from Dark Sky as well as indoor sensor measurements using an ESP32
 
+![Weather Display with updated layout](./img/weather-display-06-2020.jpg)
+
+*Updated Layout with larger temperature and units*
+
 ![Weather Display](./img/weather-display.jpg)
+
+*Old Layout*
 
 The weather data is received using the [Dark Sky](https://darksky.net) API. You can get a developer account with 1000 API calls for free. The display is updated about every 30 min and is performing two API calls, one to receive the current data and daily forecast and one to receive the 48h hourly forecast. The connection is using the https protocol.
 
