@@ -679,7 +679,7 @@ void drawGraphs()
     apptemp[r] = Hourly[r].apparentTemperature;
   }
   float range [2] = {0,0};
-  lineGraph(display, x1, 280, w, 80, temp, apptemp, range, max_points, "Temperature");
+  lineGraph(display, x1, 280, w, 80, temp, apptemp, range, max_points, currentTime, "Temp & Feels");
   range[1] = 100;
   float hum [max_points] = {0};
   float prob [max_points] = {0};
@@ -688,5 +688,5 @@ void drawGraphs()
     hum[r]  = Hourly[r].humidity*100;
     prob[r] = Hourly[r].precipProbability*100;
   }
-  lineGraph(display, x2, 280, w, 80, hum, prob, range, max_points, "Humidity");
+  lineGraph(display, x2, 280, w, 80, hum, prob, range, max_points, currentTime, "Hum. & Rain %");
 }
