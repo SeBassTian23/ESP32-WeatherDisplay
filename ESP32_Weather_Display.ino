@@ -25,7 +25,7 @@
  * 
  * Sensors:
  *  - HTU21D: https://github.com/sparkfun/HTU21D_Breakout
- *  - BMP180: https://github.com/sparkfun/BMP180_Breakout
+ *  - BMP280: https://github.com/adafruit/Adafruit_BMP280_Library
  *  - CSS811: https://github.com/adafruit/Adafruit_CCS811
  * 
  * Inspiration:
@@ -52,12 +52,13 @@ GxEPD2_3C<GxEPD2_750c, GxEPD2_750c::HEIGHT> display(GxEPD2_750c(/*CS=*/ 15, /*DC
 #include <math.h> 
 
 /* Sensors */
-#include <SFE_BMP180.h>
 #include "SparkFunHTU21D.h"
 #include "Adafruit_CCS811.h"
+#include "Adafruit_BMP280.h"
+
 HTU21D humiditySensor;
-SFE_BMP180 pressureSensor;
 Adafruit_CCS811 ccs;
+Adafruit_BMP280 bmp;
 
 /* Fonts */
 #include "fonts/OpenSans_Regular64pt7b.h"
@@ -141,8 +142,8 @@ void setup()
 
   // Setup
   humiditySensor.begin();
-  pressureSensor.begin();
   ccs.begin();
+  bmp.begin();
 
   // Get Data and Update Screen
   getWeatherData();
@@ -379,6 +380,9 @@ void getSensorData()
     insideTemperature = 1.8 * insideTemperature + 32.0;
   Serial.println("Inside Temperature:" + String(insideTemperature));
   Serial.println("Inside Humidity:" + String(insideHumidity));
+
+  bmp.readTemperature();
+  insidePressure = bmp.seaLevelForAltitude( altitude, bmp.readPressure() * 0.01 ); // Pressure is given in Pa
 
   // We need the wait here for the CSS811 to start outputting
   // the first results. Perhaps we can average here in the future
