@@ -404,32 +404,6 @@ void getSensorData()
     }
   }
 
-  char status;
-  double T,P,p0,a;
-
-  status = pressureSensor.startTemperature();
-  if (status != 0)
-  {
-    // Wait for the measurement to complete:
-    delay(status);
-    status = pressureSensor.getTemperature(T);
-    if (status != 0)
-    {
-      // The parameter is the oversampling setting, from 0 to 3 (highest res, longest wait).
-      status = pressureSensor.startPressure(3);
-      if (status != 0)
-      {
-        // Wait for the measurement to complete:
-        delay(status);
-        status = pressureSensor.getPressure(P,T);
-        if (status != 0)
-        {
-          insidePressure = pressureSensor.sealevel(P,altitude);
-          Serial.println("Inside Pressure:" + String(insidePressure));
-        }
-      }
-    }
-  }
 }
 
 /* Show Indoor Data */
