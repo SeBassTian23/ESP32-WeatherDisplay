@@ -103,6 +103,7 @@ Alert_type Alerts[max_alerts];
 #include "src/graphs.h"
 
 /* Current Weather Parameters */
+int           offset;
 time_t        currentTime;
 const char*   summary;
 const char*   summaryDay;
@@ -357,8 +358,14 @@ bool parseDarkSky(String json, int req)
 
   if(req == 1)
     {
+    // Get timezone offset
+    offset               = doc["offset"].as<int>();                                 Serial.println("Timezone Offset: "+String(offset));
+    if(offset){
+      gmtOffset_sec = offset*3600;
+    }
+
     // Current Weather
-    currentTime          = doc["currently"]["time"].as<time_t>()+gmtOffset_sec;     Serial.println("summary: "+String(currentTime));
+    currentTime          = doc["currently"]["time"].as<time_t>()+gmtOffset_sec;     Serial.println("Current Time: "+String(currentTime));
     summary              = doc["currently"]["summary"].as<const char*>();           Serial.println("summary: "+String(summary));
     icon                 = doc["currently"]["icon"].as<const char*>();              Serial.println("icon: "+String(icon));
     precipProbability    = doc["currently"]["precipProbability"].as<float>();       Serial.println("precipProbability: "+String(precipProbability));
@@ -404,16 +411,6 @@ bool parseDarkSky(String json, int req)
       Forcast[r].temperatureMin     = doc["daily"]["data"][r+1]["temperatureMin"].as<float>();
       Forcast[r].temperatureMax     = doc["daily"]["data"][r+1]["temperatureMax"].as<float>(); Serial.println("Forcast: "+String(Forcast[r].temperatureMax));
     }
-
-    // Check if it daylight savings (DST)
-    struct tm *lt = localtime(&currentTime);
-    if(lt->tm_isdst > 0)
-    {
-      gmtOffset_sec += 3600;
-      currentTime += 3600;
-    }
-    Serial.print("DST: ");
-    Serial.println(lt->tm_isdst);
 
   }
   else if(req == 2)
