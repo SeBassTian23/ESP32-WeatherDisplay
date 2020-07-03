@@ -1,5 +1,6 @@
 /*
- * Drawing function for graphs
+ * Drawing instructions for Weather icons
+ * 
  */
 
 #include "graphs.h"
