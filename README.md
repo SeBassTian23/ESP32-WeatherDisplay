@@ -4,11 +4,11 @@
 
 ![Weather Display with updated layout](./img/weather-display-06-2020.jpg)
 
-*Updated Layout with larger temperature and units*
+*Updated Layout:* Larger font for temperature and units. New icon for in-house values and rearranged values for current weather.
 
 ![Weather Display](./img/weather-display.jpg)
 
-*Old Layout*
+*Old Layout:* Initial layout.
 
 The weather data is received using the [Dark Sky](https://darksky.net) API. You can get a developer account with 1000 API calls for free. The display is updated about every 30 min and is performing two API calls, one to receive the current data and daily forecast and one to receive the 48h hourly forecast. The connection is using the https protocol.
 
@@ -27,7 +27,19 @@ Since [Apple Inc. has acquired Dark Sky](https://blog.darksky.net/dark-sky-has-a
 
 ## Wiring Components
 
-The breakout boards are wired as shown in the schematic (still in the works).
+![Circuit Board and Wiring the Breakout boards](./img/weather-display-circuit-board.svg)
+
+| ESP32  |  PIN  | Function             |
+| :----: | :---: | :------------------- |
+|  SCK   | IO21  | Clock                |
+|  SDA   | IO22  | Data                 |
+|  GND   |  GND  | Ground               |
+|  VIN   |  5V   | 5 Volt               |
+|  3.3V  | 3.3V  | 3.3 Volt             |
+| GPIO04 |  IO4  | Digital Pin high/low |
+| GPIO34 | IO34  | Analog Pin 0-4095    |
+
+Thanks to [Robert Zegarac](https://github.com/zegarac) for his help designing the circuit to measure the battery charge and powering down the sensors as well as soldering the SMD parts.
 
 ## Hardware Components
 
@@ -53,16 +65,16 @@ The power regulator on the controller board is not the best when using the board
 ## Software and Dependencies
 
 + **Display Driver and GFX**
-	+ [Display Driver (Jean-Marc Zingg)](https://github.com/ZinggJM/GxEPD2)
+  + [Display Driver (Jean-Marc Zingg)](https://github.com/ZinggJM/GxEPD2)
 + **Fonts**
-	+ [OpenSans](https://www.opensans.com) - Standard open font
-	+ [GNU FreeFont](https://www.gnu.org/software/freefont/) - included in Adafruit's GFX library
+  + [OpenSans](https://www.opensans.com) - Standard open font
+  + [GNU FreeFont](https://www.gnu.org/software/freefont/) - included in Adafruit's GFX library
 + **Other**
-	+ [ArduinoJson](https://arduinojson.org) - Powerful JSON parser for Arduino
-	+ [WiFi](https://www.arduino.cc/en/Reference/WiFi) - Arduino IDE
-	+ [HTTPClient](https://www.arduino.cc/en/Tutorial/HttpClient) - Arduino IDE
-	+ [WiFiClientSecure](https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFiClientSecure) - Arduino IDE
-	+ [math](https://www.arduino.cc/en/Math/H) - Arduino IDE
+  + [ArduinoJson](https://arduinojson.org) - Powerful JSON parser for Arduino
+  + [WiFi](https://www.arduino.cc/en/Reference/WiFi) - Arduino IDE
+  + [HTTPClient](https://www.arduino.cc/en/Tutorial/HttpClient) - Arduino IDE
+  + [WiFiClientSecure](https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFiClientSecure) - Arduino IDE
+  + [math](https://www.arduino.cc/en/Math/H) - Arduino IDE
 
 ## Inspiration for Code and Design
 
