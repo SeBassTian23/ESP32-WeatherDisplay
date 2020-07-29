@@ -121,6 +121,6 @@ The sensors in the frame collect data to display the indoor climate. The frame i
 
 The first version of the code would update the display every 30 minutes and together with the CCS811 not being able to properly powering down, it would last for about a week.
 
-The new version updates the display every 30 minutes during the day and only every 2 hours at night. Also the hardware has been updated, allowing to turn off the power for the sensors completely, resulting in a battery life of about **2 months** now.
+The new version updates the display every 30 minutes during the day and only every 2 hours at night. Also the hardware has been updated, allowing to turn off the power for the sensors completely, resulting in a battery life of about **3 months** now (see battery discharge graph). The *battery low* icon will now be displayed when the ADC value to monitor the battery charge drops below 2000.
 
-The display currently always shows a battery icon, with an estimated voltage and ADC value read. In the future the battery icon is supposed to be shown only when the charge is low without the values. Due to the long battery life, it takes a while to figure an average ADC value to use for the low power warning.
+![LiPo Battery Discharge](img/lipo-discharge.png)
