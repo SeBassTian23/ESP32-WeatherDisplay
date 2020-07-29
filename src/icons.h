@@ -28,4 +28,4 @@ void iconMoonPhase(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t r, floa
 
 void iconHouse(GxEPD2_GFX& display, String timeofday);
 
-void iconBatteryEmpty( GxEPD2_GFX& display, float voltage, int adc);
+void iconBatteryEmpty( GxEPD2_GFX& display);

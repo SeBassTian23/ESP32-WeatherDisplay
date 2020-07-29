@@ -577,12 +577,9 @@ void iconHouse(GxEPD2_GFX& display, String timeofday)
   display.drawLine(24, 293, 24, 294, GxEPD_BLACK);
 }
 
-void iconBatteryEmpty( GxEPD2_GFX& display, float voltage, int adc)
+void iconBatteryEmpty( GxEPD2_GFX& display)
 {
   display.drawRect(5, 5, 12, 7, GxEPD_BLACK);
   display.drawRect(4, 6, 1, 5, GxEPD_BLACK);
   display.fillRect(13, 5, 3, 7, GxEPD_BLACK);
-  display.setFont();
-  display.setCursor(19,5);
-  display.print(String(voltage) + "V " + adc);
 }

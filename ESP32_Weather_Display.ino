@@ -218,11 +218,10 @@ void battery()
 
   Serial.print("Voltage = ");
   Serial.println(voltage);
-  // TODO: figure out a good way to
-  // if(voltage < 4.0)
-  // {
-    iconBatteryEmpty(display, voltage, ADC_VALUE);
-  // }
+  if(ADC_VALUE < 2000)
+  {
+    iconBatteryEmpty(display);
+  }
 }
 
 /* Sleep */
