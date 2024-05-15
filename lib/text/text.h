@@ -6,3 +6,4 @@
 
 void textCenter(GxEPD2_GFX& display, int x, int y, String text);
 void textRight(GxEPD2_GFX& display, int x, int y, String text);
+void textEllipsis(GxEPD2_GFX& display, int x, int y, int width, String text);

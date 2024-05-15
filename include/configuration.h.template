@@ -1,0 +1,33 @@
+/*
+ * Setup for Weather Display
+ */
+
+// WiFi credentials
+const char* WIFI_SSID               = "<Your SSID>";                      // WiFi SSID
+const char* WIFI_PASSWORD           = "<Your Password>";                  // WiFi password
+
+// Open Weather Map API-Key
+const char* OWM_API_KEY             = "<Open Weather Developer Key>";     // Get the developer key for 1000 request/day
+
+// Your Location
+const float LOCATION_LONGITUDE      = <Longitude of your location>;       // Longitude
+const float LOCATION_LATITUDE       = <Latitude of your location>;        // Latitude
+const float LOCATION_ELEVATION      = <Elevation of your location>;       // Elevation of your location in meters (https://www.mapdevelopers.com/elevation_calculator.php)
+const char* LOCATION_NAME           = "<Location Label>";                 // Location Name (Custom Label - leave empty if not wanted)
+
+// Internationalization (i18n)
+const char* I18N_UNITS              = "metric";                           // units "standard", "metric", "imperial"
+const char* I18N_LANGUAGE           = "en";                               // language (https://openweathermap.org/api/one-call-3#multi)
+
+// Sleep Time in Minutes
+const long DISPLAY_SLEEP_DURATION   = 30;                                 // Display update interval
+const int DISPLAY_POWER_SAVE_START  = 22;                                 // Start power save where display is not updated
+const int DISPLAY_POWER_SAVE_END    = 5;                                  // End power save where display is not updated
+
+// Display Color
+const char* DISPLAY_COLOR_MODE      = "light";                            // Colormode "light", "dark", "bw"
+
+// API Parameters (don't change)
+const char* OWM_API_URL             = "api.openweathermap.org";           // URL
+const char* OWM_API_EXCLUDE         = "minutely,hourly";                  // Reduce the size of the returned JSON
+const char* OWM_API_EXCLUDE_HOURLY  = "currently,minutely,daily,alerts";  // Reduce the size of the returned JSON

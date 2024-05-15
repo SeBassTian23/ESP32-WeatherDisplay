@@ -10,6 +10,10 @@ desktop.ini
 
 # Folders
 .vscode/*
+.pio/*
+
+# Credentials
+include/configuration.h
 
 # Prerequisites
 *.d

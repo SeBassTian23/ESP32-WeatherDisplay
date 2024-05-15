@@ -23,3 +23,28 @@ void textRight(GxEPD2_GFX& display, int x, int y, String text)
   display.setCursor(x - w, y);
   display.print(text);
 }
+
+void textEllipsis(GxEPD2_GFX& display, int x, int y, int width, String text)
+{
+
+  int16_t  x0, y0;
+  uint16_t w, h;
+
+  display.getTextBounds(String(text), x, y, &x0, &y0, &w, &h);
+
+  uint16_t w_substr = w;
+  String ellipsis = text;
+  int length = ellipsis.length();
+  if(w_substr > width){
+    while(w_substr > width)
+    {
+      length -= 1;
+      ellipsis = ellipsis.substring(0,length);
+      display.getTextBounds(ellipsis, x, y, &x0, &y0, &w, &h);
+      w_substr = w;
+    }
+    ellipsis = ellipsis.substring(0,length-3) + "...";
+  }
+  display.setCursor(x, y);
+  display.print(ellipsis);
+}

@@ -4,8 +4,8 @@
   struct Alert_type {
     time_t        start;
     time_t        end;
-    const char*   severity;
     const char*   title;
+    const char*   tag;
   };
 
 #endif

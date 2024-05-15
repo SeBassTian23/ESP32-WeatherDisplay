@@ -7,7 +7,7 @@
 #include "text.h"
 #include <math.h> 
 
-void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t h, float Data[], float Data2[], float Range[], int len, time_t starttime, String title )
+void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t h, float Data[], float Data2[], float Range[], int len, time_t starttime, String title, int line, int background, int highlight )
 {
     float ymin;
     float ymax;
@@ -43,6 +43,7 @@ void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t
 
     // Title
     display.setFont();
+    display.cp437(true);
     textCenter(display, x + w / 2, y-10, title);
     
     // Draw y-axis tick markers and dashed lines
@@ -51,11 +52,11 @@ void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t
         textRight(display,x-2,y+((h/ticklines)*i-4), String( lrint(ymin+steps*(ticklines-i)) ) );
         if(i == 0)
             continue;
-        display.drawLine(x+1,y+((h/ticklines)*i),x+w-1,y+((h/ticklines)*i),GxEPD_RED);
+        display.drawLine(x+1,y+((h/ticklines)*i),x+w-1,y+((h/ticklines)*i),highlight);
         bool blank = true;
         for(byte r = 0; r<w; r = r+3 ){
             if(blank){
-                display.drawLine(x+r,y+((h/ticklines)*i),x+r+3,y+((h/ticklines)*i),GxEPD_WHITE);
+                display.drawLine(x+r,y+((h/ticklines)*i),x+r+3,y+((h/ticklines)*i), background);
                 blank = false;
             }
             else{
@@ -65,10 +66,10 @@ void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t
     }
 
     // x-Axis
-    display.drawLine(x,y+h,x+w,y+h,GxEPD_BLACK);
+    display.drawLine(x,y+h,x+w,y+h, line);
 
     // y-Axis
-    display.drawLine(x,y,x,y+h,GxEPD_BLACK);
+    display.drawLine(x,y,x,y+h, line);
 
     // Draw data line 1
     float x1 = x + 1;
@@ -88,16 +89,31 @@ void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t
         y2 = y+h-1;
       if(y4 > y+h-1)
         y4 = y+h-1;
-      display.drawLine(x1, y3, x2, y4, GxEPD_RED);
+      display.drawLine(x1, y3, x2, y4, highlight);
 
       for(byte r = 0; r<ceil(w/len)+1; r++)
       {
         float m = (y4-y3)/(x2-x1);
         float b = y3-m*x1;
-        display.drawLine(x1+r, y+h-1, x1+r, m*(x1+r)+b, GxEPD_RED);
+        float y2calc = m*(x1+r)+b;
+        if (y2calc > y+h-1)
+          display.drawLine(x1+r, y+h-1, x1+r, (y+h-1), highlight); // Prevent overflow on the bottom
+        else if(y2calc >= y)
+          display.drawLine(x1+r, y+h-1, x1+r, y2calc, highlight);
+        else
+          display.drawLine(x1+r, y+h-1, x1+r, y, highlight);
+
+
+        // if (y2calc > y+h-1)
+        //   display.drawLine(x1+r, y+h-1, x1+r, (y+h-1), highlight); // Prevent overflow on the bottom
+        // else if(y2calc < y)
+        //   display.drawLine(x1+r, y+h-1, x1+r, y, highlight); // Prevent overflow on the bottom
+        // else
+        //   display.drawLine(x1+r, y+h-1, x1+r, y2calc, highlight);
+
       }
 
-      display.drawLine(x1, y1, x2, y2, GxEPD_BLACK);
+      display.drawLine(x1, y1, x2, y2, line);
 
       x1 = x2;
       y1 = y2;
@@ -106,8 +122,8 @@ void lineGraph(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t w, uint16_t
     }
 
     // x-Axis ticks
-    struct tm *lt;
-    char buff[32];
+    // struct tm *lt;
+    // char buff[32];
     for (int i = 0; i <= 4; i++) {
       display.setCursor(x-4+(w/4)*i ,y+h+6);
       display.print(String(12*i)+"h");
