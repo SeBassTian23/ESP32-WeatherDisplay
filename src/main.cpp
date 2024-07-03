@@ -53,11 +53,14 @@ GxEPD2_3C<GxEPD2_750c, GxEPD2_750c::HEIGHT> display(GxEPD2_750c(/*CS=*/15, /*DC=
 #include <math.h>
 
 /* Sensors */
-#include "SparkFunHTU21D.h"
+// #include "SparkFunHTU21D.h"
 #include "Adafruit_CCS811.h"
 #include "Adafruit_BMP280.h"
 
-HTU21D humiditySensor;
+#include "HTU21D.h"
+
+HTU21D htu;
+// HTU21D humiditySensor;
 Adafruit_CCS811 ccs;
 Adafruit_BMP280 bmp;
 
@@ -195,7 +198,7 @@ void setup()
   digitalWrite(POWER_SWITCH_PIN, LOW);
 
   // Setup
-  humiditySensor.begin();
+  // humiditySensor.begin();
   ccs.begin();
   bmp.begin();
 
@@ -566,8 +569,14 @@ void dataToSerial()
 /* Get Readings from Sensor */
 void getSensorData()
 {
-  insideHumidity = humiditySensor.readHumidity();
-  insideTemperature = humiditySensor.readTemperature();
+  // insideHumidity = humiditySensor.readHumidity();
+  // insideTemperature = humiditySensor.readTemperature();
+  if (htu.measure())
+  {
+    insideHumidity = htu.getHumidity();
+    insideTemperature = htu.getTemperature();
+  }
+
   // If temperature and Humidity are valid
   // The data can be used to set up the CSS811 sensor
   if (!isnan(insideHumidity) && !isnan(insideTemperature))
