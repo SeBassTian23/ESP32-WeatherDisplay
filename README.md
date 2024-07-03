@@ -18,21 +18,21 @@ Previously, the [Arduino IDE](https://arduino.cc) had been used, but with the ch
 
 When installing the library, rename the file `configuration.h.template` in the `/include/` folder to `configuration.h` and enter your settings.
 
-| Option                     | Default    | Description                                                                                   |
-| :------------------------- | :--------- | :-------------------------------------------------------------------------------------------- |
-| `WIFI_SSID`                |            | WiFi SSID                                                                                     |
-| `WIFI_PASSWORD`            |            | WiFi password                                                                                 |
-| `OWM_API_KEY`              |            | The OpenWeather developer key for 1000 request/day (https://openweathermap.org)               |
-| `LOCATION_LONGITUDE`       |            | Longitude, between −180 and 180                                                               |
-| `LOCATION_LATITUDE`        |            | Latitude, between −90 and 90                                                                  |
-| `LOCATION_ELEVATION`       |            | Elevation in meters (e.g. ) (https://www.mapdevelopers.com/elevation_calculator.php)          |
-| `LOCATION_NAME`            |            | Name of the location (leave empty if no label needed)                                         |
-| `I18N_UNITS`               | `"metric"` | Unit format `standard`, `metric`, `imperial` (https://openweathermap.org/api/one-call-3#data) |
-| `I18N_LANGUAGE`            | `"en"`     | language (https://openweathermap.org/api/one-call-3#multi) _Not fully implemented_            |
-| `DISPLAY_SLEEP_DURATION`   | `30`       | Interval of display updates in minutes. More frequent updates increase battery usage          |
-| `DISPLAY_POWER_SAVE_START` | `22`       | Start of power save mode (22 = 10pm)                                                          |
-| `DISPLAY_POWER_SAVE_END`   | `5`        | End of power save mode (5 = 5am)                                                              |
-| `DISPLAY_COLOR_MODE`       | `"light"`  | Select one of the following modes: `light`, `dark`, `bw` (black and white)                    |
+| Option                     | Default         | Description                                                                                   |
+| :------------------------- | :-------------- | :-------------------------------------------------------------------------------------------- |
+| `WIFI_SSID`                |                 | WiFi SSID                                                                                     |
+| `WIFI_PASSWORD`            |                 | WiFi password                                                                                 |
+| `OWM_API_KEY`              |                 | The OpenWeather developer key for 1000 request/day (https://openweathermap.org)               |
+| `LOCATION_LONGITUDE`       |                 | Longitude, between −180 and 180                                                               |
+| `LOCATION_LATITUDE`        |                 | Latitude, between −90 and 90                                                                  |
+| `LOCATION_ELEVATION`       |                 | Elevation in meters (e.g. ) (https://www.mapdevelopers.com/elevation_calculator.php)          |
+| `LOCATION_NAME`            | `"My Location"` | Name of the location (leave empty if no label needed)                                         |
+| `I18N_UNITS`               | `"metric"`      | Unit format `standard`, `metric`, `imperial` (https://openweathermap.org/api/one-call-3#data) |
+| `I18N_LANGUAGE`            | `"en"`          | language (https://openweathermap.org/api/one-call-3#multi) _Not fully implemented_            |
+| `DISPLAY_SLEEP_DURATION`   | `30`            | Interval of display updates in minutes. More frequent updates increase battery usage          |
+| `DISPLAY_POWER_SAVE_START` | `22`            | Start of power save mode (22 = 10pm)                                                          |
+| `DISPLAY_POWER_SAVE_END`   | `5`             | End of power save mode (5 = 5am)                                                              |
+| `DISPLAY_COLOR_MODE`       | `"light"`       | Select one of the following modes: `light`, `dark`, `bw` (black and white)                    |
 
 ## I18n (Internationalization)
 

@@ -13,7 +13,7 @@ const char* OWM_API_KEY             = "<Open Weather Developer Key>";     // Get
 const float LOCATION_LONGITUDE      = <Longitude of your location>;       // Longitude
 const float LOCATION_LATITUDE       = <Latitude of your location>;        // Latitude
 const float LOCATION_ELEVATION      = <Elevation of your location>;       // Elevation of your location in meters (https://www.mapdevelopers.com/elevation_calculator.php)
-const char* LOCATION_NAME           = "<Location Label>";                 // Location Name (Custom Label - leave empty if not wanted)
+const char* LOCATION_NAME           = "My Location";                      // Location Name (Custom Label - leave empty if not wanted)
 
 // Internationalization (i18n)
 const char* I18N_UNITS              = "metric";                           // units "standard", "metric", "imperial"
