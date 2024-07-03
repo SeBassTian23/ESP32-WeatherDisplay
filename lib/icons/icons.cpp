@@ -586,56 +586,216 @@ void iconBatteryEmpty( GxEPD2_GFX& display, int line, int background, int highli
 // TODO:
 
 // small-craft-advisory
-// void iconSmallCraftAdvisory(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconSmallCraftAdvisory(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  // flag pole
+  display.fillRect(x+(s*0.25), y+(s*0.1), (s*0.05), (s*0.8), line );
+  // flag
+  display.fillTriangle(x+(s*0.325), y+(s*0.1), x+(s*0.325), y+(s*0.45), x+(s*0.725), y+(s*0.275), line);
+}
 
 // hurricane
-// void iconHurricane(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconHurricane(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+
+  // Arms
+  fillEllipsis(display, x+(s*0.5), y+(s*0.5), (s*0.2), (s*0.4), line);
+  fillEllipsis(display, x+(s*0.5), y+(s*0.5), (s*0.15), (s*0.35), background);
+
+  // Top Right
+  display.fillRect( x+(s*0.525), y+(s*0.1), (s*0.4), (s*0.4), background );
+  // bottom left
+  display.fillRect( x+(s*0.075), y+(s*0.5), (s*0.4), (s*0.4), background );
+
+  // Circle
+  display.fillCircle( x+(s*0.5), y+(s*0.5), (s*0.2), line );
+  display.fillCircle( x+(s*0.5), y+(s*0.5), (s*0.15), background );
+
+}
 
 // gale-warning
-// void iconGaleWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconGaleWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  // flag pole
+  display.fillRect(x+(s*0.25), y+(s*0.1), (s*0.05), (s*0.8), line );
+  // flag
+  display.fillTriangle(x+(s*0.325), y+(s*0.1), x+(s*0.325), y+(s*0.45), x+(s*0.725), y+(s*0.275), line);
+  // flag
+  display.fillTriangle(x+(s*0.325), y+(s*0.45), x+(s*0.325), y+(s*0.8), x+(s*0.725), y+(s*0.625), line);
+}
 
 // storm-warning
-// void iconStormWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconStormWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  // flag pole
+  display.fillRect(x+(s*0.25), y+(s*0.1), (s*0.05), (s*0.8), line );
+  // flag
+  display.fillRect(x+(s*0.325), y+(s*0.1), (s*0.4), (s*0.3), line);
+  display.fillRect(x+(s*0.325) + s*0.1, y+(s*0.1) + s*0.09, s*0.18, s*0.14, background);
+
+}
 
 // hurricane-warning
-// void iconHurricaneWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconHurricaneWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  // flag pole
+  display.fillRect(x+(s*0.25), y+(s*0.1), (s*0.05), (s*0.8), line );
+  // flag
+  display.fillRect(x+(s*0.325), y+(s*0.1), (s*0.4), (s*0.3), line);
+  display.fillRect(x+(s*0.325) + s*0.1, y+(s*0.1) + s*0.09, s*0.18, s*0.14, background);
+  // flag
+  display.fillRect(x+(s*0.325), y+(s*0.45), (s*0.4), (s*0.3), line);
+  display.fillRect(x+(s*0.325) + s*0.1, y+(s*0.45) + s*0.09, s*0.18, s*0.14, background);
+}
 
 // fire
-// void iconFire(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconFire(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  display.drawRect(x,y,s,s,line);
+
+  // bottom flame
+  display.fillCircle( x+(s*0.5), y+(s*0.5), s*0.325, line );
+  display.fillCircle( x+(s*0.375), y+(s*0.395), s*0.175, background );
+
+  // center flame
+  display.fillCircle( x+(s*0.6), y+(s*0.375), s*0.325, line );
+
+  display.fillCircle( x+(s*0.635), y+(s*0.18), s*0.175, background );
+
+  display.fillCircle( x+(s*0.675), y+(s*0.475), s*0.175, background );
+
+  display.fillRect( x+(s*0.7), y+(s*0.09), s*0.25, s*0.5, background );
+
+
+  // ground
+  display.fillRoundRect( x+(s*0.1), y+(s*0.8), s*0.8, s*0.1, s*0.05, line );
+}
 
 // flood
-// void iconFlood(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconFlood(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  // water
+  display.fillRoundRect( x+(s*0.1), y+(s*0.6), s*0.8, s*0.3, s*0.05, line  );
+  // waves
+  display.fillCircle(x+(s*0.25), y+(s*0.5), s*0.15, background);
+  display.fillCircle(x+(s*0.5), y+(s*0.5), s*0.15, background);
+  display.fillCircle(x+(s*0.75), y+(s*0.5), s*0.15, background);
+
+  // Arrow
+  display.fillRect(x+(s*0.485), y+(s*0.2), (s*0.05), (s*0.4), line );
+  for(byte r=0; r<(int)(s*0.075); r++)
+  {
+    display.drawLine(x+(s*0.5), y+(s*0.175)+r, x+(s*0.6), y+(s*0.3)+r, line);
+    display.drawLine(x+(s*0.5), y+(s*0.175)+r, x+(s*0.4), y+(s*0.3)+r, line);
+  }
+}
 
 // smog
-// void iconSmog(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconSmog(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  display.fillCircle((x+s*0.485), (y+s*0.3), (s*0.2), line);
+  display.fillCircle((x+s*0.3), (y+s*0.475), (s*0.17), line);
+  display.fillCircle((x+s*0.7), (y+s*0.475), (s*0.17), line);
+  display.fillCircle((x+s*0.48), (y+s*0.59), (s*0.12), line);
+
+  display.fillCircle((x+s*0.6), (y+s*0.63), (s*0.1), line);
+  display.fillCircle((x+s*0.5), (y+s*0.7), (s*0.08), line);
+  display.fillCircle((x+s*0.55), (y+s*0.79), (s*0.08), line);
+}
 
 // smoke
-// void iconSmoke(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconSmoke(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  display.fillCircle((x+s*0.485), (y+s*0.3), (s*0.2), line);
+  display.fillCircle((x+s*0.3), (y+s*0.475), (s*0.17), line);
+  display.fillCircle((x+s*0.7), (y+s*0.475), (s*0.17), line);
+  display.fillCircle((x+s*0.48), (y+s*0.59), (s*0.12), line);
+
+  display.fillCircle((x+s*0.6), (y+s*0.63), (s*0.1), line);
+  display.fillCircle((x+s*0.5), (y+s*0.7), (s*0.08), line);
+  display.fillCircle((x+s*0.55), (y+s*0.79), (s*0.08), line);
+
+  display.fillCircle((x+s*0.5), (y+s*0.5), (s*0.15), background);
+  display.fillCircle((x+s*0.6), (y+s*0.63), (s*0.1*0.8), background);
+  display.fillCircle((x+s*0.485), (y+s*0.3), (s*0.2*0.8), background);
+  display.fillCircle((x+s*0.3), (y+s*0.475), (s*0.17*0.8), background);
+  display.fillCircle((x+s*0.7), (y+s*0.475), (s*0.17*0.8), background);
+  display.fillCircle((x+s*0.48), (y+s*0.59), (s*0.12*0.8), background);
+
+}
 
 // tsunami
-// void iconSmoke(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconTsunami(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  // Wave
+  for(int i=0; i < (int)(s*0.03); i++)
+  {
+    // 0x4, 0x2, 0x8, 0x1
+    display.drawCircleHelper( x+(s*0.75)+i, y+(s*0.85), s*0.475, 0x1, line );
+  }
 
-// smoke
-// void iconTsunami(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+  display.fillRect(x+(s*0.1), y+(s*0.6), (s*0.8), (s*0.4), background);
+
+  display.fillCircle( x+(s*0.75), y+(s*0.32), (s*0.068), line);
+  display.fillCircle( x+(s*0.75), y+(s*0.32), (s*0.048), background);
+
+  display.fillCircle( x+(s*0.73), y+(s*0.44), (s*0.068), line);
+  display.fillCircle( x+(s*0.73), y+(s*0.44), (s*0.048), background);
+
+  for(int i=0; i < (int)(s*0.04); i++)
+  {
+    display.drawCircleHelper( x+(s*0.75)+i, y+(s*0.85), s*0.6, 0x1, line );
+    display.drawCircleHelper( x+(s*0.75)+i, y+(s*0.85), s*0.35, 0x1, line );
+  }
+
+  display.fillTriangle( x+(s*0.72), y+(s*0.32), x+(s*0.82), y+(s*0.18), x+(s*0.82), y+(s*0.46), background);
+  display.fillTriangle( x+(s*0.70), y+(s*0.44), x+(s*0.80), y+(s*0.30), x+(s*0.80), y+(s*0.58), background);
+
+  // House
+  display.fillRect( x+(s*0.6), y+(s*0.72), (s*0.04), (s*0.15), line);
+  display.fillRect( x+(s*0.76), y+(s*0.72), (s*0.04), (s*0.15), line);
+  // Roof
+  for(int i=0; i < (int)(s*0.04); i++)
+  {
+    display.drawLine( x+(s*0.7), y+(s*0.65)+i, x+(s*0.55), y+(s*0.75)+i, line);
+    display.drawLine( x+(s*0.7), y+(s*0.65)+i, x+(s*0.85), y+(s*0.75)+i, line);  
+  }
+
+  // ground
+  display.fillRoundRect( x+(s*0.1), y+(s*0.85), s*0.8, s*0.05, s*0.025, line );
+}
 
 // thermometer
-// void iconThermometer(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconThermometer(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  // outside
+  display.fillRoundRect (x+(s*0.425), y+(s*0.1), (s*0.15), (s*0.7), (s*0.075), line );
+  display.fillCircle(x+(s*0.5)-1, y+(s*0.75), (s*0.15), line );
+  // inside
+  display.fillRoundRect (x+(s*0.425) + (s*0.15)/4 , y+(s*0.1)+(s*0.15)/2, (s*0.15)/2-1, (s*0.6), (s*0.075)/2, background );
+  display.fillCircle(x+(s*0.5)-1, y+(s*0.75), (s*0.15)*0.6, background );
+
+}
 
 // dust
-// void iconDust(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconDust(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  for (int i = 0; i <= s*0.7; i++)
+    {
+      // Line 1
+      if(i < s*0.3*0.7 || (i > s*0.4*0.7 && i < s*0.85*0.7) || i == (int)(s*0.7)-1 )
+        display.fillCircle( x+s*0.15+i, y+s*0.4, s*0.02, line);
+      // Line 2
+      if(i == (int)(s*0.25*0.7) || (i > s*0.35*0.7 && i < s*0.65*0.7) || (i > s*0.75*0.7 && i < s*0.95*0.7) )
+        display.fillCircle( x+s*0.15+i, y+s*0.5, s*0.02, line);
+      // Line 3
+      if(i < s*0.48*0.7 || i == (int)(s*0.59*0.7) || (i > s*0.68*0.7 && i < s*0.7) )
+        display.fillCircle( x+s*0.15+i, y+s*0.6, s*0.02, line);
+      // Line 4
+      if(i == (int)(s*0.125*0.7) || (i > s*0.25*0.7 && i < s*0.55*0.7) || (i > s*0.68*0.7 && i < s*0.85*0.7) )
+        display.fillCircle( x+s*0.15+i, y+s*0.7, s*0.02, line);
+  }
+}
 
 // warning-triangle
 void iconWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
@@ -648,3 +808,12 @@ void iconWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int li
   display.fillRoundRect (x+(s*0.425) + (s*0.15)/4 + 1, y+(s*0.68), (s*0.075), (s*0.075), (s*0.075)/2, line );
   // display.fillCircle(x+(s*0.5)-1, y+(s*0.72), (s*0.0375), line);
 }
+
+// empty-warning-trangle
+void iconWarningEmpty(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  // Triangle
+  display.fillTriangle(x+(s*0.5), y+(s*0.2), x+(s*0.15), y+(s*0.8), x+(s*0.85), y+(s*0.8), highlight);
+  display.drawTriangle(x+(s*0.5), y+(s*0.2), x+(s*0.15), y+(s*0.8), x+(s*0.85), y+(s*0.8), line);
+}
+
