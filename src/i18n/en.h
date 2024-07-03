@@ -8,7 +8,7 @@ const char STR_TIME_FORMAT[] PROGMEM = "%I:%M %p";
 const char STR_TEMPERATURE[] PROGMEM = "Temperature";
 const char STR_HUMIDITY[] PROGMEM = "Humidity";
 const char STR_PRESSURE[] PROGMEM = "Pressure";
-const char STR_WIND_SPEED[] PROGMEM = "Wind Speed";
+const char STR_WIND_SPEED_GUST[] PROGMEM = "Wind | Gust";
 const char STR_UV_INDEX[] PROGMEM = "UV-Index";
 const char STR_AIR_QUALITY[] PROGMEM = "Air Quality";
 const char STR_VISIBILITY[] PROGMEM = "Visibility";
@@ -16,7 +16,8 @@ const char STR_PRECIPITATION[] PROGMEM = "Precipitation";
 const char STR_MIN[] PROGMEM = "Min";
 const char STR_MAX[] PROGMEM = "Max";
 const char STR_FEELS_LIKE[] PROGMEM = "Feels Like";
-const char STR_ALERTS[] PROGMEM = "Alert(s)";
+const char STR_ALERT_START[] PROGMEM = "Start";
+const char STR_ALERT_END[] PROGMEM = "End";
 
 const char* STR_WEEKDAYS[7] PROGMEM = {
   "Sunday",

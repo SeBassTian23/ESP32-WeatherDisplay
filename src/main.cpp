@@ -42,15 +42,15 @@
 #include <U8g2_for_Adafruit_GFX.h>
 
 /* Mapping of Waveshare ESP32 Driver Board */
-GxEPD2_3C<GxEPD2_750c, GxEPD2_750c::HEIGHT> display(GxEPD2_750c(/*CS=*/ 15, /*DC=*/ 27, /*RST=*/ 26, /*BUSY=*/ 25));
+GxEPD2_3C<GxEPD2_750c, GxEPD2_750c::HEIGHT> display(GxEPD2_750c(/*CS=*/15, /*DC=*/27, /*RST=*/26, /*BUSY=*/25));
 
 /* Dependencies */
-#include "configuration.h"  
+#include "configuration.h"
 #include <ArduinoJson.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 // #include <WiFiClientSecure.h>
-#include <math.h> 
+#include <math.h>
 
 /* Sensors */
 #include "SparkFunHTU21D.h"
@@ -65,7 +65,7 @@ Adafruit_BMP280 bmp;
 const int ADC_PIN = 34;
 const int POWER_SWITCH_PIN = 4;
 int ADC_VALUE = 0;
-float voltage = 0.0; 
+float voltage = 0.0;
 
 /* Fonts */
 U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
@@ -109,44 +109,45 @@ Alert_type Alerts[max_alerts];
 #include "i18n/i18n.h"
 
 /* Current Weather Parameters */
-int           gmtOffset_sec;
-time_t        currentTime;
-const char*   summary;
-const char*   summaryDay;
-const char*   icon;
-int           weatherID;
-float         precipAccumulation;
-float         precipProbability;
-float         precipType;
-float         temperature;
-float         apparentTemperature;
-float         humidity;
-float         pressure;
-float         windSpeed;
-int           windDeg;
-float         cloudCover;
-float         visibility;
-float         uvIndex;
-int           aqi;
-float         temperatureMin;
-float         temperatureMax;
-time_t        sunriseTime;
-time_t        sunsetTime;
-float         moonPhase;
+int gmtOffset_sec;
+time_t currentTime;
+const char *summary;
+const char *summaryDay;
+const char *icon;
+int weatherID;
+float precipAccumulation;
+float precipProbability;
+float precipType;
+float temperature;
+float apparentTemperature;
+float humidity;
+float pressure;
+float windSpeed;
+float windSpeedGust;
+int windDeg;
+float cloudCover;
+float visibility;
+float uvIndex;
+int aqi;
+float temperatureMin;
+float temperatureMax;
+time_t sunriseTime;
+time_t sunsetTime;
+float moonPhase;
 
 /* Inside Sensor Parameters */
-float         insideHumidity;
-float         insideTemperature;
-float         insidePressure;
-float         insideVOC;
-float         insideECO2;
+float insideHumidity;
+float insideTemperature;
+float insidePressure;
+float insideVOC;
+float insideECO2;
 
 /* Alerts Data */
-bool          hasAlert = false;
-time_t        alertStart;
-time_t        alertEnd;
-const char*   alertType;
-const char*   alertTitle;
+bool hasAlert = false;
+time_t alertStart;
+time_t alertEnd;
+const char *alertType;
+const char *alertTitle;
 
 /* Colormode */
 int CM_LINE = GxEPD_BLACK;
@@ -158,7 +159,7 @@ uint8_t StartWiFi();
 void StopWiFi();
 void drawBattery();
 void espSLEEP();
-bool httpsRequest(WiFiClient& client, int req);
+bool httpsRequest(WiFiClient &client, int req);
 void getWeatherData();
 void dataToSerial();
 void buildView();
@@ -168,12 +169,13 @@ void powerDownSensors();
 void drawSensorData();
 void drawWeekDay();
 void drawSunMoonPhase();
-void drawCurrentIcon(uint16_t x, uint16_t y, uint16_t s, const char* i, int id);
+void drawCurrentIcon(uint16_t x, uint16_t y, uint16_t s, const char *i, int id);
 void drawSummary();
 void drawAlert();
 void drawForcast();
 void drawGraphs();
 void drawValue(uint16_t x, uint16_t y, float value, String title, String unit);
+void drawValues(uint16_t x, uint16_t y, float values[], int size, String title, String unit);
 String cardinalDirection(int deg);
 void drawLocation();
 
@@ -197,15 +199,22 @@ void setup()
   ccs.begin();
   bmp.begin();
 
+  if (!bmp.begin())
+  {
+    Serial.println("Could not find a valid BMP280 sensor, check wiring!");
+    while (1)
+      ;
+  }
+
   // Colormode
-  if( strcmp(DISPLAY_COLOR_MODE, "dark") == 0 )
+  if (strcmp(DISPLAY_COLOR_MODE, "dark") == 0)
   {
     CM_LINE = GxEPD_WHITE;
     CM_BACKGROUND = GxEPD_BLACK;
     CM_HIGHLIGHT = GxEPD_RED;
   }
 
-  if( strcmp(DISPLAY_COLOR_MODE, "bw") == 0 )
+  if (strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
   {
     CM_LINE = GxEPD_BLACK;
     CM_BACKGROUND = GxEPD_WHITE;
@@ -224,7 +233,8 @@ void loop()
 /* Start WiFi and Connect to Network */
 uint8_t StartWiFi()
 {
-  Serial.print("\r\nConnecting to: "); Serial.println(String(WIFI_SSID));
+  Serial.print("\r\nConnecting to: ");
+  Serial.println(String(WIFI_SSID));
   // IPAddress dns(8, 8, 8, 8); // Google DNS
   WiFi.disconnect();
   WiFi.mode(WIFI_STA); // switch off AP
@@ -234,20 +244,25 @@ uint8_t StartWiFi()
   unsigned long start = millis();
   uint8_t connectionStatus;
   bool AttemptConnection = true;
-  while (AttemptConnection) {
+  while (AttemptConnection)
+  {
     connectionStatus = WiFi.status();
-    if (millis() > start + 15000) { // Wait 15-secs maximum
+    if (millis() > start + 15000)
+    { // Wait 15-secs maximum
       AttemptConnection = false;
     }
-    if (connectionStatus == WL_CONNECTED || connectionStatus == WL_CONNECT_FAILED) {
+    if (connectionStatus == WL_CONNECTED || connectionStatus == WL_CONNECT_FAILED)
+    {
       AttemptConnection = false;
     }
     delay(50);
   }
-  if (connectionStatus == WL_CONNECTED) {
+  if (connectionStatus == WL_CONNECTED)
+  {
     Serial.println("WiFi connected at: " + WiFi.localIP().toString());
   }
-  else Serial.println("WiFi connection *** FAILED ***");
+  else
+    Serial.println("WiFi connection *** FAILED ***");
   return connectionStatus;
 }
 
@@ -264,12 +279,12 @@ void drawBattery()
   ADC_VALUE = analogRead(ADC_PIN);
   Serial.print("ADC VALUE = ");
   Serial.println(ADC_VALUE);
-  voltage = (ADC_VALUE * 3.3 ) / (4095.0);
+  voltage = (ADC_VALUE * 3.3) / (4095.0);
   voltage = (ADC_VALUE / 4095.0) * 7.46;
 
   Serial.print("Voltage = ");
   Serial.println(voltage);
-  if(ADC_VALUE < 2000)
+  if (ADC_VALUE < 2000)
   {
     iconBatteryEmpty(display);
   }
@@ -284,21 +299,22 @@ void espSLEEP()
 
   struct tm *lt = localtime(&currentTime);
 
-  if(lt->tm_hour >= DISPLAY_POWER_SAVE_START || lt->tm_hour < DISPLAY_POWER_SAVE_END )
+  if (lt->tm_hour >= DISPLAY_POWER_SAVE_START || lt->tm_hour < DISPLAY_POWER_SAVE_END)
   {
-    SleepTimer = 7200;
+    if (SleepTimer < 60)
+      SleepTimer = 7200;
 
-    if( lt->tm_hour < DISPLAY_POWER_SAVE_END && (lt->tm_hour + ( SleepTimer / 3600 )) > DISPLAY_POWER_SAVE_END  )
+    if (lt->tm_hour < DISPLAY_POWER_SAVE_END && (lt->tm_hour + (SleepTimer / 3600)) > DISPLAY_POWER_SAVE_END)
     {
-        SleepTimer  =  (DISPLAY_POWER_SAVE_END * 3600) - ( (lt->tm_hour * 3600) + (lt->tm_min * 60) + lt->tm_sec );
-        if( SleepTimer < (DISPLAY_SLEEP_DURATION * 60) )
-        {
-            SleepTimer = SleepTimer + DISPLAY_SLEEP_DURATION * 60;
-        }
+      SleepTimer = (DISPLAY_POWER_SAVE_END * 3600) - ((lt->tm_hour * 3600) + (lt->tm_min * 60) + lt->tm_sec);
+      if (SleepTimer < (DISPLAY_SLEEP_DURATION * 60))
+      {
+        SleepTimer = SleepTimer + DISPLAY_SLEEP_DURATION * 60;
+      }
     }
   }
 
-  if(SleepTimer < DISPLAY_SLEEP_DURATION * 60)
+  if (SleepTimer < DISPLAY_SLEEP_DURATION * 60)
   {
     SleepTimer = DISPLAY_SLEEP_DURATION * 60;
   }
@@ -309,29 +325,17 @@ void espSLEEP()
 }
 
 /* Http Request */
-bool httpsRequest(WiFiClient& client, int req)
+bool httpsRequest(WiFiClient &client, int req)
 {
   // close connection before sending a new request
   client.stop();
   HTTPClient http;
-  String uri = "http://" + String(OWM_API_URL)
-             + "/data/3.0/onecall?lat=" + String(LOCATION_LATITUDE) + "&lon=" + String(LOCATION_LONGITUDE) 
-             + "&exclude=" + OWM_API_EXCLUDE 
-             + "&units=" + I18N_UNITS 
-             + "&lang=" + I18N_LANGUAGE 
-             + "&appid=" + OWM_API_KEY;
-  if(req == 2)
-    uri = "http://" + String(OWM_API_URL)
-      + "/data/3.0/onecall?lat=" + String(LOCATION_LATITUDE) + "&lon=" + String(LOCATION_LONGITUDE) 
-      + "&exclude=" + OWM_API_EXCLUDE_HOURLY 
-      + "&units=" + I18N_UNITS 
-      + "&lang=" + I18N_LANGUAGE 
-      + "&appid=" + OWM_API_KEY;
-  
-  if(req == 3)
-      uri = "http://" + String(OWM_API_URL)
-      + "/data/2.5/air_pollution?lat=" + String(LOCATION_LATITUDE) + "&lon=" + String(LOCATION_LONGITUDE) 
-      + "&appid=" + OWM_API_KEY;
+  String uri = "http://" + String(OWM_API_URL) + "/data/3.0/onecall?lat=" + String(LOCATION_LATITUDE) + "&lon=" + String(LOCATION_LONGITUDE) + "&exclude=" + OWM_API_EXCLUDE + "&units=" + I18N_UNITS + "&lang=" + I18N_LANGUAGE + "&appid=" + OWM_API_KEY;
+  if (req == 2)
+    uri = "http://" + String(OWM_API_URL) + "/data/3.0/onecall?lat=" + String(LOCATION_LATITUDE) + "&lon=" + String(LOCATION_LONGITUDE) + "&exclude=" + OWM_API_EXCLUDE_HOURLY + "&units=" + I18N_UNITS + "&lang=" + I18N_LANGUAGE + "&appid=" + OWM_API_KEY;
+
+  if (req == 3)
+    uri = "http://" + String(OWM_API_URL) + "/data/2.5/air_pollution?lat=" + String(LOCATION_LATITUDE) + "&lon=" + String(LOCATION_LONGITUDE) + "&appid=" + OWM_API_KEY;
 
   Serial.println(uri);
 
@@ -340,9 +344,10 @@ bool httpsRequest(WiFiClient& client, int req)
   http.begin(uri);
   http.setTimeout(30000);
   int httpCode = http.GET();
-  if(httpCode == HTTP_CODE_OK) {
-    if (!parseOpenWeatherMap(http.getString(), req ) )
-        return false;
+  if (httpCode == HTTP_CODE_OK)
+  {
+    if (!parseOpenWeatherMap(http.getString(), req))
+      return false;
     client.stop();
     http.end();
     return true;
@@ -362,29 +367,36 @@ bool httpsRequest(WiFiClient& client, int req)
 /* Receive Data from Open Weather Maps */
 void getWeatherData()
 {
-  if (StartWiFi() == WL_CONNECTED) {
+  if (StartWiFi() == WL_CONNECTED)
+  {
     byte Attempts = 1;
     bool Weather = false, WeatherH = false, WeatherAQI = false;
-    WiFiClientSecure client;   // wifi client object
-    while ((Weather == false || WeatherH == false) && Attempts < 3) { // Try up-to 2 time for Weather and Forecast data
-      if (WeatherAQI == false) WeatherAQI = httpsRequest(client,3);
-      if (WeatherH == false) WeatherH = httpsRequest(client,2);
-      if (Weather  == false) Weather = httpsRequest(client,1);
-      Attempts++;     
+    WiFiClientSecure client; // wifi client object
+    while ((Weather == false || WeatherH == false) && Attempts < 3)
+    { // Try up-to 2 time for Weather and Forecast data
+      if (WeatherAQI == false)
+        WeatherAQI = httpsRequest(client, 3);
+      if (WeatherH == false)
+        WeatherH = httpsRequest(client, 2);
+      if (Weather == false)
+        Weather = httpsRequest(client, 1);
+      Attempts++;
 
       if (Weather && WeatherH && WeatherAQI)
       {
-        Serial.println("Weather "+ String(Weather));
-        Serial.println("Hourly: "+ String(WeatherH));
-        Serial.println("AQI: "+ String(WeatherAQI));
-        StopWiFi();     // Reduces power consumption
+        Serial.println("Current Request: " + String(Weather));
+        Serial.println("Hourly Request: " + String(WeatherH));
+        Serial.println("AQI Request: " + String(WeatherAQI));
+        StopWiFi(); // Reduces power consumption
         getSensorData();
         dataToSerial();
         buildView();
       }
     }
     espSLEEP();
-  }else{
+  }
+  else
+  {
     espSLEEP();
   }
 }
@@ -406,100 +418,104 @@ void buildView()
     drawGraphs();
     drawAlert();
     drawBattery();
-  }
-  while (display.nextPage());
+  } while (display.nextPage());
   espSLEEP();
 }
 
 /* Parse JSON from Open Weather Maps */
 bool parseOpenWeatherMap(String json, int req)
 {
-  Serial.print(F("\nCreating object...and "));
+  Serial.println(F("Requesting Weather data"));
 
   // allocate the JsonDocument
   // DynamicJsonDocument doc(40 * 1024);
   JsonDocument doc;
-  
+
   // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, json.c_str());
   // Test if parsing succeeds.
-  if (error) {
-    Serial.print(F("deserializeJson() failed: "));
+  if (error)
+  {
+    Serial.print(F("DeserializeJson() failed: "));
     Serial.println(error.c_str());
     return false;
   }
 
-  if(req == 1)
-    {
+  if (req == 1)
+  {
     // Get timezone offset
-    gmtOffset_sec        = doc["timezone_offset"].as<int>();
+    gmtOffset_sec = doc["timezone_offset"].as<int>();
 
     // Current Weather
-    currentTime          = doc["current"]["dt"].as<time_t>()+gmtOffset_sec;
-    summary              = doc["current"]["weather"][0]["description"].as<const char*>();
-    icon                 = doc["current"]["weather"][0]["icon"].as<const char*>();
-    weatherID            = doc["current"]["weather"][0]["id"].as<int>();
-    precipProbability    = doc["current"]["precipProbability"].as<float>();
-    precipType           = doc["current"]["precipType"].as<float>();
-    temperature          = doc["current"]["temp"].as<float>();
-    apparentTemperature  = doc["current"]["feels_like"].as<float>();
-    humidity             = doc["current"]["humidity"].as<float>();
-    pressure             = doc["current"]["pressure"].as<float>();
-    windSpeed            = doc["current"]["wind_speed"].as<float>();
-    windDeg              = doc["current"]["wind_deg"].as<int>();
-    cloudCover           = doc["current"]["clouds"].as<float>();
-    uvIndex              = doc["current"]["uvi"].as<float>();
-    visibility           = doc["current"]["visibility"].as<float>();
-    summaryDay           = doc["daily"][0]["summary"].as<const char*>();
-    temperatureMin       = doc["daily"][0]["temp"]["min"].as<float>();
-    temperatureMax       = doc["daily"][0]["temp"]["max"].as<float>();
+    currentTime = doc["current"]["dt"].as<time_t>() + gmtOffset_sec;
+    summary = doc["current"]["weather"][0]["description"].as<const char *>();
+    icon = doc["current"]["weather"][0]["icon"].as<const char *>();
+    weatherID = doc["current"]["weather"][0]["id"].as<int>();
+    precipProbability = doc["current"]["precipProbability"].as<float>();
+    precipType = doc["current"]["precipType"].as<float>();
+    temperature = doc["current"]["temp"].as<float>();
+    apparentTemperature = doc["current"]["feels_like"].as<float>();
+    humidity = doc["current"]["humidity"].as<float>();
+    pressure = doc["current"]["pressure"].as<float>();
+    windSpeed = doc["current"]["wind_speed"].as<float>();
+    windSpeedGust = doc["current"]["wind_gust"].as<float>();
+    windDeg = doc["current"]["wind_deg"].as<int>();
+    cloudCover = doc["current"]["clouds"].as<float>();
+    uvIndex = doc["current"]["uvi"].as<float>();
+    visibility = doc["current"]["visibility"].as<float>();
+    summaryDay = doc["daily"][0]["summary"].as<const char *>();
+    temperatureMin = doc["daily"][0]["temp"]["min"].as<float>();
+    temperatureMax = doc["daily"][0]["temp"]["max"].as<float>();
 
-    if(doc["current"].containsKey("rain"))
-      precipAccumulation   = doc["current"]["rain"]["1h"].as<float>();
+    if (doc["current"].containsKey("rain"))
+      precipAccumulation = doc["current"]["rain"]["1h"].as<float>();
     else
       precipAccumulation = 0.0;
-                                                                                    
-    sunriseTime          = doc["daily"][0]["sunrise"].as<time_t>()+gmtOffset_sec;
-    sunsetTime           = doc["daily"][0]["sunset"].as<time_t>()+gmtOffset_sec;
-    moonPhase            = doc["daily"][0]["moon_phase"].as<float>();
-    
+
+    sunriseTime = doc["daily"][0]["sunrise"].as<time_t>() + gmtOffset_sec;
+    sunsetTime = doc["daily"][0]["sunset"].as<time_t>() + gmtOffset_sec;
+    moonPhase = doc["daily"][0]["moon_phase"].as<float>();
+
     // Alerts
     hasAlert = false;
-    if(doc.containsKey("alerts"))
+    if (doc.containsKey("alerts"))
     {
       hasAlert = true;
-      for(byte r = 0; r < max_alerts; r++){
-        Alerts[r].start    = doc["alerts"][r]["start"].as<time_t>()+gmtOffset_sec;
-        Alerts[r].end      = doc["alerts"][r]["end"].as<time_t>()+gmtOffset_sec;
-        Alerts[r].title    = doc["alerts"][r]["event"].as<const char*>();
-        if(doc["alerts"][r]["tags"].size() > 0)
-          Alerts[r].tag      = doc["alerts"][r]["tags"][0].as<const char*>();
+      for (byte r = 0; r < max_alerts; r++)
+      {
+        Alerts[r].start = doc["alerts"][r]["start"].as<time_t>() + gmtOffset_sec;
+        Alerts[r].end = doc["alerts"][r]["end"].as<time_t>() + gmtOffset_sec;
+        Alerts[r].title = doc["alerts"][r]["event"].as<const char *>();
+        if (doc["alerts"][r]["tags"].size() > 0)
+          Alerts[r].tag = doc["alerts"][r]["tags"][0].as<const char *>();
       }
     }
 
     // 5 Day Forcast
-    for (byte r = 0; r < max_days; r++) {
+    for (byte r = 0; r < max_days; r++)
+    {
       // r+1 to skip the current day for the 5 day forcast
-      Forcast[r].time               = doc["daily"][r+1]["dt"].as<time_t>();
-      Forcast[r].summary            = doc["daily"][r+1]["description"].as<const char*>();
-      Forcast[r].icon               = doc["daily"][r+1]["weather"][0]["icon"].as<const char*>();
-      Forcast[r].id                 = doc["daily"][r+1]["weather"][0]["id"].as<int>();
-      Forcast[r].temperatureMin     = doc["daily"][r+1]["temp"]["min"].as<float>();
-      Forcast[r].temperatureMax     = doc["daily"][r+1]["temp"]["max"].as<float>();
+      Forcast[r].time = doc["daily"][r + 1]["dt"].as<time_t>();
+      Forcast[r].summary = doc["daily"][r + 1]["description"].as<const char *>();
+      Forcast[r].icon = doc["daily"][r + 1]["weather"][0]["icon"].as<const char *>();
+      Forcast[r].id = doc["daily"][r + 1]["weather"][0]["id"].as<int>();
+      Forcast[r].temperatureMin = doc["daily"][r + 1]["temp"]["min"].as<float>();
+      Forcast[r].temperatureMax = doc["daily"][r + 1]["temp"]["max"].as<float>();
     }
   }
-  else if(req == 2)
+  else if (req == 2)
   {
     // Hourly
-    for (byte r = 0; r < max_points; r++) {
-      Hourly[r].temperature         = doc["hourly"][r]["temp"].as<float>();        
+    for (byte r = 0; r < max_points; r++)
+    {
+      Hourly[r].temperature = doc["hourly"][r]["temp"].as<float>();
       Hourly[r].apparentTemperature = doc["hourly"][r]["feels_like"].as<float>();
-      Hourly[r].humidity            = doc["hourly"][r]["humidity"].as<float>();           
-      Hourly[r].precipProbability   = doc["hourly"][r]["pop"].as<float>();
+      Hourly[r].humidity = doc["hourly"][r]["humidity"].as<float>();
+      Hourly[r].precipProbability = doc["hourly"][r]["pop"].as<float>();
     }
     precipProbability = Hourly[0].precipProbability;
   }
-  else if(req == 3)
+  else if (req == 3)
   {
     aqi = doc["list"][0]["main"]["aqi"].as<int>();
   }
@@ -510,27 +526,41 @@ bool parseOpenWeatherMap(String json, int req)
 /* Print Data to Terminal */
 void dataToSerial()
 {
-  Serial.println("Timezone Offset: "+String(gmtOffset_sec));
-  Serial.println("Current Time: "+String(currentTime));
-  Serial.println("summary: "+String(summary));
-  Serial.println("icon: "+String(icon));
-  Serial.println("precipProbability: "+String(precipProbability));
-  Serial.println("precipType: "+String(precipType));
-  Serial.println("temperature: "+String(temperature));
-  Serial.println("apparentTemperature: "+String(apparentTemperature));
-  Serial.println("humidity: "+String(humidity));
-  Serial.println("pressure: "+String(pressure));
-  Serial.println("windSpeed: "+String(windSpeed));
-  Serial.println("cloudCover: "+String(cloudCover));
-  Serial.println("uvIndex: "+String(uvIndex));
-  Serial.println("summary day: "+String(summaryDay));
-  Serial.println("temperatureMin: "+String(temperatureMin));
-  Serial.println("temperatureMax: "+String(temperatureMax));
-  Serial.println("precipAccumulation: "+String(precipAccumulation));
-  Serial.println("sunriseTime: "+String(sunriseTime));
-  Serial.println("sunsetTime: "+String(sunsetTime));
-  Serial.println("moonPhase: "+String(moonPhase));
-  Serial.println("AQI: "+String(aqi));
+  Serial.println("Open Weather Data");
+  Serial.println("-----------------------------------");
+
+  Serial.println("Timezone Offset: " + String(gmtOffset_sec));
+  Serial.println("Current Time: " + String(currentTime));
+  Serial.println("summary: " + String(summary));
+  Serial.println("icon: " + String(icon));
+  Serial.println("precipProbability: " + String(precipProbability));
+  Serial.println("precipType: " + String(precipType));
+  Serial.println("temperature: " + String(temperature));
+  Serial.println("apparentTemperature: " + String(apparentTemperature));
+  Serial.println("humidity: " + String(humidity));
+  Serial.println("pressure: " + String(pressure));
+  Serial.println("windSpeed: " + String(windSpeed));
+  Serial.println("windSpeedGust: " + String(windSpeed));
+  Serial.println("cloudCover: " + String(cloudCover));
+  Serial.println("uvIndex: " + String(uvIndex));
+  Serial.println("summary day: " + String(summaryDay));
+  Serial.println("temperatureMin: " + String(temperatureMin));
+  Serial.println("temperatureMax: " + String(temperatureMax));
+  Serial.println("precipAccumulation: " + String(precipAccumulation));
+  Serial.println("sunriseTime: " + String(sunriseTime));
+  Serial.println("sunsetTime: " + String(sunsetTime));
+  Serial.println("moonPhase: " + String(moonPhase));
+  Serial.println("AQI: " + String(aqi));
+
+  Serial.println();
+  Serial.println("Inside Sensor Data");
+  Serial.println("-----------------------------------");
+
+  Serial.println("Inside Temperature: " + String(insideTemperature));
+  Serial.println("Inside Humidity: " + String(insideHumidity));
+  Serial.println("Inside Pressure: " + String(insidePressure));
+  Serial.println("VOC: " + String(insideVOC));
+  Serial.println("eCO2: " + String(insideECO2));
 }
 
 /* Get Readings from Sensor */
@@ -540,21 +570,19 @@ void getSensorData()
   insideTemperature = humiditySensor.readTemperature();
   // If temperature and Humidity are valid
   // The data can be used to set up the CSS811 sensor
-  if( !isnan(insideHumidity) && !isnan(insideTemperature) )
+  if (!isnan(insideHumidity) && !isnan(insideTemperature))
   {
-    ccs.setEnvironmentalData( (int) insideHumidity, insideTemperature );
+    ccs.setEnvironmentalData((int)insideHumidity, insideTemperature);
   }
 
   if (strcmp(I18N_UNITS, "imperial") == 0)
     insideTemperature = 1.8 * insideTemperature + 32.0;
   if (strcmp(I18N_UNITS, "standard") == 0)
     insideTemperature += 273.15;
-  Serial.println("Inside Temperature: " + String(insideTemperature));
-  Serial.println("Inside Humidity: " + String(insideHumidity));
 
   insidePressure = bmp.readPressure() / 100;
-  
-  //bmp.seaLevelForAltitude( elevation, bmp.readPressure() * 0.01 ); // Pressure is given in Pa
+
+  // bmp.seaLevelForAltitude( elevation, bmp.readPressure() * 0.01 ); // Pressure is given in Pa
   insidePressure /= pow(1.0 - (LOCATION_ELEVATION / 44330.0), 5.255);
 
   // We need the wait here for the CSS811 to start outputting
@@ -562,17 +590,17 @@ void getSensorData()
   // for more stable results
   delay(20000);
 
-  if(ccs.available()){
-    if(!ccs.readData()){
+  if (ccs.available())
+  {
+    if (!ccs.readData())
+    {
       // CO2 in ppm
       insideECO2 = ccs.geteCO2();
-      Serial.print("eCO2: ");
-      Serial.println(insideECO2);
-      
+      if (insideECO2 < 400)
+        insideECO2 = 400;
+
       // VOC
       insideVOC = ccs.getTVOC();
-      Serial.print("VOC: ");
-      Serial.println(insideVOC);
     }
   }
 }
@@ -591,7 +619,7 @@ void drawSensorData()
   // Inside House Icon
   struct tm *lt = localtime(&currentTime);
 
-  if(lt->tm_hour >= DISPLAY_POWER_SAVE_START || lt->tm_hour <= DISPLAY_POWER_SAVE_END )
+  if (lt->tm_hour >= DISPLAY_POWER_SAVE_START || lt->tm_hour <= DISPLAY_POWER_SAVE_END)
   {
     Serial.println("Night Mode");
     iconHouse(display, "night", CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
@@ -604,7 +632,7 @@ void drawSensorData()
 
   // Sensor data with units
   drawValue(20, 312, insideHumidity, STR_HUMIDITY, "%");
-  if(strcmp(I18N_UNITS,"imperial") == 0)
+  if (strcmp(I18N_UNITS, "imperial") == 0)
     drawValue(110, 312, (insidePressure * 0.02953), STR_PRESSURE, "inHg");
   else
     drawValue(110, 312, insidePressure, STR_PRESSURE, "hPa");
@@ -612,21 +640,21 @@ void drawSensorData()
   drawValue(110, 347, insideECO2, "CO2", "ppm");
 
   // Display Inside Temperature
-  int16_t  x1, y1;
+  int16_t x1, y1;
   uint16_t w, h;
   display.setTextColor(CM_LINE);
   display.setFont(&OpenSans_Regular22pt7b);
-  display.setCursor(110,300);
+  display.setCursor(110, 300);
   display.print(String(lrint(insideTemperature)));
   display.getTextBounds(String(lrint(insideTemperature)), 110, 300, &x1, &y1, &w, &h);
 
   display.setFont(&OpenSans_Regular8pt7b);
-  display.setCursor(110+w+4, 273+9);
-  if(strcmp(I18N_UNITS, "metric") == 0)
+  display.setCursor(110 + w + 4, 273 + 9);
+  if (strcmp(I18N_UNITS, "metric") == 0)
     display.print("°C");
-  if(strcmp(I18N_UNITS, "imperial") == 0)
+  if (strcmp(I18N_UNITS, "imperial") == 0)
     display.print("°F");
-  if(strcmp(I18N_UNITS, "standard") == 0)
+  if (strcmp(I18N_UNITS, "standard") == 0)
     display.print("K");
 }
 
@@ -638,19 +666,19 @@ void drawWeekDay()
   Serial.print(buff);
   display.setFont();
   display.fillScreen(CM_BACKGROUND);
-  display.fillRect(0,0,192,192,CM_HIGHLIGHT);
+  display.fillRect(0, 0, 192, 192, CM_HIGHLIGHT);
   display.setTextColor(CM_LINE);
-  
-  if(strcmp(DISPLAY_COLOR_MODE, "dark") == 0)
+
+  if (strcmp(DISPLAY_COLOR_MODE, "dark") == 0)
     display.setTextColor(CM_BACKGROUND);
 
-  if(strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
+  if (strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
     display.setTextColor(CM_BACKGROUND);
 
   // Day
   display.setFont(&OpenSans_Regular64pt7b);
-  strftime(buff, 32, "%e",lt);
-  if( (int)buff == 1)
+  strftime(buff, 32, "%e", lt);
+  if ((int)buff == 1)
     textCenter(display, 76, 120, buff); // correct for x-offset in the character 1
   else
     textCenter(display, 82, 120, buff);
@@ -664,14 +692,13 @@ void drawWeekDay()
 void drawSunMoonPhase()
 {
   // Sun Rise Icon
-  if(strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
+  if (strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
     iconSunRise(display, 20, 215, "up", CM_LINE, CM_BACKGROUND, CM_BACKGROUND);
   else
     iconSunRise(display, 20, 215, "up", CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
 
-
   // Sun Set Icon
-  if(strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
+  if (strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
     iconSunRise(display, 20, 240, "down", CM_LINE, CM_BACKGROUND, CM_BACKGROUND);
   else
     iconSunRise(display, 20, 240, "down", CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
@@ -684,7 +711,6 @@ void drawSunMoonPhase()
   strftime(buff, 32, STR_TIME_FORMAT, lt);
   display.setCursor(40, 218);
   display.print(buff);
-  Serial.println(buff);
 
   // Sunset Time
   lt = localtime(&sunsetTime);
@@ -693,81 +719,81 @@ void drawSunMoonPhase()
   strftime(buff, 32, STR_TIME_FORMAT, lt);
   display.setCursor(40, 245);
   display.print(buff);
-  Serial.println(buff);
 
   // Moon Icon
-  if( strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
+  if (strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
     iconMoonPhase(display, 155, 224, 18, moonPhase, CM_LINE, CM_BACKGROUND, CM_BACKGROUND);
-  else if( strcmp(DISPLAY_COLOR_MODE, "dark") == 0)
+  else if (strcmp(DISPLAY_COLOR_MODE, "dark") == 0)
     iconMoonPhase(display, 155, 224, 18, moonPhase, CM_BACKGROUND, CM_BACKGROUND, CM_HIGHLIGHT);
   else
     iconMoonPhase(display, 155, 224, 18, moonPhase, CM_LINE, CM_LINE, CM_HIGHLIGHT);
 }
 
 /* Current Weather Icon */
-void drawCurrentIcon(uint16_t x, uint16_t y, uint16_t s, const char* i, int id)
+void drawCurrentIcon(uint16_t x, uint16_t y, uint16_t s, const char *i, int id)
 {
   // Clear Day
-  if(String(i) == "01d")
-    iconClearDay(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  if (String(i) == "01d")
+    iconClearDay(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Clear Night
-  else if(String(i) == "01n")
-    iconClearNight(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "01n")
+    iconClearNight(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Rain
-  else if(String(i) == "10d" || String(i) == "09d") //
-    iconRain(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "10d" || String(i) == "09d") //
+    iconRain(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Sleet
-  else if(id == 611 || id == 612 || id == 613) //
-    iconSleet(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (id == 611 || id == 612 || id == 613) //
+    iconSleet(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Snow
-  else if(String(i) == "13d") //
-    iconSnow(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "13d") //
+    iconSnow(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Wind
-  else if(String(i) == "50d") //
-    iconWind(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "50d") //
+    iconWind(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Fog
-  else if(String(i) == "50d")
-    iconFog(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "50d")
+    iconFog(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Cloudy
-  else if(String(i) == "04d" || String(i) == "04n")
-    iconCloudy(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "04d" || String(i) == "04n")
+    iconCloudy(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Cloudy Scatter
-  else if(String(i) == "03d" || String(i) == "03n")
-    iconCloudyScatter(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "03d" || String(i) == "03n")
+    iconCloudyScatter(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Cloudy Day
-  else if(String(i) == "02d")
-    iconCloudyDay(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "02d")
+    iconCloudyDay(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Cloudy Night
-  else if(String(i) == "02n")
-    iconCloudyNight(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "02n")
+    iconCloudyNight(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Hail
-  else if(String(i) == "50d")
-    iconHail(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "50d")
+    iconHail(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Thunderstorm
-  else if(String(i) == "11d")
-    iconThunderstorm(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (String(i) == "11d")
+    iconThunderstorm(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Tornado
-  else if(id == 781)
-    iconTornado(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else if (id == 781)
+    iconTornado(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   // Unknown Condition
-  else{
-    iconCloudy(display,x,y,s,CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+  else
+  {
+    iconCloudy(display, x, y, s, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   }
 }
 
 /* Current Weather Summary */
 void drawSummary()
 {
-  drawCurrentIcon(193,0,152, icon, weatherID );
+  drawCurrentIcon(193, 0, 152, icon, weatherID);
 
   display.setFont();
   textCenter(display, 269, 154, summary);
 
-  int16_t  x0, y0;
+  int16_t x0, y0;
   uint16_t w, h;
   int y1 = 15;
-  int y2 = y1+85;
-  int y3 = y2+35+3;
+  int y2 = y1 + 85;
+  int y3 = y2 + 35 + 3;
 
   int col1 = 364;
   int col2 = col1 + 86;
@@ -776,119 +802,138 @@ void drawSummary()
   display.setFont();
   display.setTextColor(CM_LINE);
 
-  if(precipAccumulation > 0.0)
+  if (precipAccumulation > 0.0)
   {
-    if(strcmp(I18N_UNITS, "imperial") == 0)
-      textRight(display, 345, y1, String( ( precipAccumulation * 0.03937008 ), 2 ) + " in/h");
+    display.setCursor(212, y1);
+    if (strcmp(I18N_UNITS, "imperial") == 0)
+    {
+      display.print(String((precipAccumulation * 0.03937008), 2) + " in/h");
+      // textRight(display, 345, y1, String((precipAccumulation * 0.03937008), 2) + " in/h");
+    }
     else
-      textRight(display, 345, y1, String( precipAccumulation ) + " mm/h");
+    {
+      display.print(String(precipAccumulation) + " mm/h");
+      // textRight(display, 345, y1, String(precipAccumulation) + " mm/h");
+    }
   }
-  
-  display.drawRect(212,173, 408, 2, CM_HIGHLIGHT);  
 
-  // display.setFont(&OpenSans_Regular8pt7b);
-  // display.setTextColor(CM_LINE);
-  // display.setCursor(212,162);
-  // display.print(summaryDay);
-  // textCenter(display, 416, 162, summaryDay);
+  display.drawRect(212, 173, 408, 2, CM_HIGHLIGHT);
 
   // Set the Current Temperature
   display.setTextColor(CM_LINE);
   display.setFont(&OpenSans_Regular34pt7b);
 
-  display.setCursor(col1,y1+48);
+  display.setCursor(col1, y1 + 48);
   display.print(lrint(temperature));
 
-  display.getTextBounds(String(lrint(temperature)), col1, y1+48, &x0, &y0, &w, &h);
+  display.getTextBounds(String(lrint(temperature)), col1, y1 + 48, &x0, &y0, &w, &h);
   // display.drawCircle( col1+w+13, y1+3, 3, CM_LINE);
-  
-  display.setFont(&OpenSans_Regular8pt7b); 
+
+  display.setFont(&OpenSans_Regular8pt7b);
   // display.setCursor( col1+w+18, y1+11 );
-  display.setCursor( col1+w+8, y1+11 );
-  if(strcmp(I18N_UNITS, "metric") == 0)
+  display.setCursor(col1 + w + 8, y1 + 11);
+  if (strcmp(I18N_UNITS, "metric") == 0)
     display.print("°C");
-  if(strcmp(I18N_UNITS, "imperial") == 0)
+  if (strcmp(I18N_UNITS, "imperial") == 0)
     display.print("°F");
-  if(strcmp(I18N_UNITS, "standard") == 0)
+  if (strcmp(I18N_UNITS, "standard") == 0)
     display.print("K");
 
   // Feels like
-  display.setFont(&OpenSans_Regular8pt7b); 
-  display.setCursor(col1,y1+68);
-  display.print( String(STR_FEELS_LIKE) + " " + String(lrint(apparentTemperature)) + "°");
+  display.setFont(&OpenSans_Regular8pt7b);
+  display.setCursor(col1, y1 + 68);
+  display.print(String(STR_FEELS_LIKE) + " " + String(lrint(apparentTemperature)) + "°");
 
   display.setFont();
-  display.setCursor(col3-38, y1 + 62);
-  display.print(String(STR_MIN)+"/"+String(STR_MAX));
+  display.setCursor(col3 - 38, y1 + 62);
+  display.print(String(STR_MIN) + "/" + String(STR_MAX));
 
   // Min Temp
-  int col3tmp = col3+18;
-  display.setFont(&OpenSans_Regular8pt7b); 
-  display.setCursor( col3tmp, y1+68 );
-  display.print( String(lrint(temperatureMin)) + "°" );
+  int col3tmp = col3 + 18;
+  display.setFont(&OpenSans_Regular8pt7b);
+  display.setCursor(col3tmp, y1 + 68);
+  display.print(String(lrint(temperatureMin)) + "°");
 
-  display.getTextBounds(String(lrint(temperatureMin)) + "°", col3tmp, y1+68, &x0, &y0, &w, &h);
+  display.getTextBounds(String(lrint(temperatureMin)) + "°", col3tmp, y1 + 68, &x0, &y0, &w, &h);
 
   // Separator
   col3tmp += w + 8;
-  display.drawLine( col3tmp, y1+68, col3tmp, y1+57, CM_LINE );
+  display.drawLine(col3tmp, y1 + 68, col3tmp, y1 + 57, CM_LINE);
 
   // Max Temp
   col3tmp += 6;
-  display.setCursor(col3tmp, y1+68);
-  display.print(String(lrint(temperatureMax)) + "°" );
+  display.setCursor(col3tmp, y1 + 68);
+  display.print(String(lrint(temperatureMax)) + "°");
 
   // Add Humidity
   drawValue(col1, y2, humidity, STR_HUMIDITY, "%");
 
   // Add Pressure
-  if(strcmp(I18N_UNITS,"imperial") == 0)
-    drawValue(col2, y2, (pressure * 0.02953) , STR_PRESSURE, "inHg");
+  if (strcmp(I18N_UNITS, "imperial") == 0)
+    drawValue(col2, y2, (pressure * 0.02953), STR_PRESSURE, "inHg");
   else
     drawValue(col2, y2, pressure, STR_PRESSURE, "hPa");
 
   // Add Wind Speed Value
-  if(strcmp(I18N_UNITS,"imperial") == 0)
-    drawValue(col3, y2, (windSpeed/0.44704), STR_WIND_SPEED, "mph " + cardinalDirection(windDeg) );
+  if (strcmp(I18N_UNITS, "imperial") == 0)
+  {
+    windSpeed /= 0.44704;
+    windSpeedGust /= 0.44704;
+    float speeds[2] = {windSpeed, windSpeedGust};
+    // drawValue(col3, y2, windSpeed, STR_WIND_SPEED_GUST, "mph " + cardinalDirection(windDeg));
+    drawValues(col3, y2, speeds, 2, STR_WIND_SPEED_GUST, "mph " + cardinalDirection(windDeg));
+  }
+  else if (strcmp(I18N_UNITS, "metric") == 0)
+  {
+    windSpeed *= 3.6;
+    windSpeedGust *= 3.6;
+    float speeds[2] = {windSpeed, windSpeedGust};
+    // drawValue(col3, y2, windSpeed, STR_WIND_SPEED_GUST, "km/h " + cardinalDirection(windDeg));
+    drawValues(col3, y2, speeds, 2, STR_WIND_SPEED_GUST, "km/h " + cardinalDirection(windDeg));
+  }
   else
-    drawValue(col3, y2, (windSpeed), STR_WIND_SPEED, "m/s " + cardinalDirection(windDeg));
+  {
+    float speeds[2] = {windSpeed, windSpeedGust};
+    // drawValue(col3, y2, windSpeed, STR_WIND_SPEED_GUST, "m/s " + cardinalDirection(windDeg));
+    drawValues(col3, y2, speeds, 2, STR_WIND_SPEED_GUST, "m/s " + cardinalDirection(windDeg));
+  }
 
   // Add Air Quality
-  if(uvIndex <= 2.5)
+  if (uvIndex <= 2.5)
     drawValue(col1, y3, uvIndex, STR_UV_INDEX, STR_UV_INDEX_STEPS[0]);
-  else if(uvIndex <= 5.5)
+  else if (uvIndex <= 5.5)
     drawValue(col1, y3, uvIndex, STR_UV_INDEX, STR_UV_INDEX_STEPS[1]);
-  else if(uvIndex <= 7.5)
+  else if (uvIndex <= 7.5)
     drawValue(col1, y3, uvIndex, STR_UV_INDEX, STR_UV_INDEX_STEPS[2]);
-  else if(uvIndex <= 10.5)
+  else if (uvIndex <= 10.5)
     drawValue(col1, y3, uvIndex, STR_UV_INDEX, STR_UV_INDEX_STEPS[3]);
-  else if(uvIndex > 10.5)
+  else if (uvIndex > 10.5)
     drawValue(col1, y3, uvIndex, STR_UV_INDEX, STR_UV_INDEX_STEPS[4]);
   else
     drawValue(col1, y3, uvIndex, STR_UV_INDEX, "");
 
   // Add Air Quality
-  if(aqi == 1)
+  if (aqi == 1)
     drawValue(col2, y3, aqi, STR_AIR_QUALITY, STR_AIR_QUALITY_STEPS[0]);
-  if(aqi == 2)
+  if (aqi == 2)
     drawValue(col2, y3, aqi, STR_AIR_QUALITY, STR_AIR_QUALITY_STEPS[1]);
-  if(aqi == 3)
+  if (aqi == 3)
     drawValue(col2, y3, aqi, STR_AIR_QUALITY, STR_AIR_QUALITY_STEPS[2]);
-  if(aqi == 4)
+  if (aqi == 4)
     drawValue(col2, y3, aqi, STR_AIR_QUALITY, STR_AIR_QUALITY_STEPS[3]);
-  if(aqi == 5)
+  if (aqi == 5)
     drawValue(col2, y3, aqi, STR_AIR_QUALITY, STR_AIR_QUALITY_STEPS[4]);
   else
     drawValue(col2, y3, aqi, STR_AIR_QUALITY, "");
 
   // Add Visibility Value
   int visibilityOffset = 0;
-  if(strcmp(I18N_LANGUAGE, "nl") == 0)
+  if (strcmp(I18N_LANGUAGE, "nl") == 0)
     visibilityOffset += 5;
-  if(strcmp(I18N_UNITS, "imperial") == 0)
-    drawValue(col3+visibilityOffset, y3, (visibility/1609.344), STR_VISIBILITY, "mi");
+  if (strcmp(I18N_UNITS, "imperial") == 0)
+    drawValue(col3 + visibilityOffset, y3, (visibility / 1609.344), STR_VISIBILITY, "mi");
   else
-    drawValue(col3+visibilityOffset, y3, (visibility/1000), STR_VISIBILITY, "km");
+    drawValue(col3 + visibilityOffset, y3, (visibility / 1000), STR_VISIBILITY, "km");
 }
 
 /* Weather Alert */
@@ -896,37 +941,47 @@ void drawAlert()
 {
   if (hasAlert)
   {
-    // Outline    
-    if(strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
-      display.drawRoundRect( 480, 34, 140, 30, 3, CM_LINE);
+    // Draw Container with Warning Icon
+    if (strcmp(DISPLAY_COLOR_MODE, "bw") == 0)
+    {
+      display.setTextColor(CM_LINE);
+      display.drawRoundRect(480, 34, 140, 30, 3, CM_LINE);
+      iconWarning(display, 486, 37, 25, CM_LINE, CM_BACKGROUND, CM_BACKGROUND);
+    }
+    else if (strcmp(DISPLAY_COLOR_MODE, "dark") == 0)
+    {
+      display.setTextColor(CM_BACKGROUND);
+      display.fillRoundRect(480, 34, 140, 30, 3, CM_HIGHLIGHT);
+      iconWarning(display, 486, 37, 25, CM_BACKGROUND, CM_BACKGROUND, CM_HIGHLIGHT);
+    }
     else
-      display.fillRoundRect( 480, 34, 140, 30, 3, CM_HIGHLIGHT);
+    {
+      display.setTextColor(CM_LINE);
+      display.fillRoundRect(480, 34, 140, 30, 3, CM_HIGHLIGHT);
+      iconWarning(display, 486, 37, 25, CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
+    }
 
-    // Title
-    // display.setFont();
-    // display.setCursor(486, 37);
-    // display.print(STR_ALERTS);
+    // Add Alert Title
+    if (Alerts[0].tag)
+      textEllipsis(display, 486 + 30, 40, 90, Alerts[0].tag);
+    else
+      textEllipsis(display, 486 + 30, 40, 90, Alerts[0].title);
 
-    // Content
-    int yStart = 40;
-    if( !Alerts[1].title )
-      yStart += 6;
-    for (byte r = 0; r < 2; r++) {
-      if( Alerts[r].title )
-      {
-        display.setTextColor(CM_LINE);
-        // display.setCursor(486, yStart + (r * 12) );
-        // display.print( "\xDB " + String(Alerts[r].title) );
-        textEllipsis( display, 486, yStart + (r * 12), 120, "\xDB " + String(Alerts[r].title) );
-        display.setTextColor(CM_BACKGROUND);
-        display.setCursor(486, yStart + (r * 12) );
-        display.print( "!" );
-      }
-      // if( strcmp(Alerts[r].tag, "") != 0 )
-      //   display.print( Alerts[r].tag );
-      // else
-      //   display.print( Alerts[r].title );
-      // break;
+    // Add Start or End time depending on current time
+    char buff[32];
+    display.setCursor(486 + 30, 40 + 12);
+
+    if (Alerts[0].start > currentTime)
+    {
+      struct tm *lt = localtime(&Alerts[0].start);
+      strftime(buff, 32, STR_TIME_FORMAT, lt);
+      display.print(String(STR_ALERT_START) + ": " + String(buff));
+    }
+    else
+    {
+      struct tm *lt = localtime(&Alerts[0].end);
+      strftime(buff, 32, STR_TIME_FORMAT, lt);
+      display.print(String(STR_ALERT_END) + ": " + String(buff));
     }
   }
 }
@@ -934,36 +989,36 @@ void drawAlert()
 /* Five Day Weather Forecast */
 void drawForcast()
 {
-  int16_t  x0, y0;
+  int16_t x0, y0;
   uint16_t w, h;
   int xpos = 210;
   int dist = 90;
-  for (byte r = 0; r < max_days; r++) {
+  for (byte r = 0; r < max_days; r++)
+  {
     display.setFont();
     struct tm *lt = localtime(&Forcast[r].time);
     // char buff[32];
     // strftime(buff, 32, "%A",lt);
     // textCenter(display,xpos+(dist*r)+25,185, String(buff));
-    textCenter(display,xpos+(dist*r)+25,185, STR_WEEKDAYS[lt->tm_wday]);
-    drawCurrentIcon(xpos+(dist*r), 190, 50, Forcast[r].icon, Forcast[r].id );
+    textCenter(display, xpos + (dist * r) + 25, 185, STR_WEEKDAYS[lt->tm_wday]);
+    drawCurrentIcon(xpos + (dist * r), 190, 50, Forcast[r].icon, Forcast[r].id);
     // textCenter(display,x+(dist*r)+25,242, String(lrint(Forcast[r].temperatureMin)) + "|" + String(lrint(Forcast[r].temperatureMax)) );
 
     // Min Temp
-    display.setFont(); 
-    textRight(display, xpos+(dist*r)+22-5, 242, String(lrint(temperatureMin)) );
-    display.drawCircle( xpos+(dist*r)+22-4, 242, 1.5, CM_LINE);
+    display.setFont();
+    textRight(display, xpos + (dist * r) + 22 - 5, 242, String(lrint(temperatureMin)));
+    display.drawCircle(xpos + (dist * r) + 22 - 4, 242, 1.5, CM_LINE);
 
     // Separator
-    display.drawLine( xpos+(dist*r)+22, 242, xpos+(dist*r)+22, 248, CM_LINE );
+    display.drawLine(xpos + (dist * r) + 22, 242, xpos + (dist * r) + 22, 248, CM_LINE);
 
     // Max Temp
-    display.setCursor(xpos+(dist*r)+22 + 4, 242);
+    display.setCursor(xpos + (dist * r) + 22 + 4, 242);
     display.print(String(lrint(Forcast[r].temperatureMax)));
-    display.getTextBounds(String(lrint(Forcast[r].temperatureMax)), xpos+(dist*r)+22 +4, 242, &x0, &y0, &w, &h);
-    display.drawCircle( xpos+(dist*r)+22+w+6, 242, 1.5, CM_LINE);
-
+    display.getTextBounds(String(lrint(Forcast[r].temperatureMax)), xpos + (dist * r) + 22 + 4, 242, &x0, &y0, &w, &h);
+    display.drawCircle(xpos + (dist * r) + 22 + w + 6, 242, 1.5, CM_LINE);
   }
-  display.drawRect(212,260, 408, 2, CM_HIGHLIGHT);  
+  display.drawRect(212, 260, 408, 2, CM_HIGHLIGHT);
 }
 
 /* 48h Forecast Graphs */
@@ -972,22 +1027,22 @@ void drawGraphs()
   int w = 160;
   int x1 = 240;
   int x2 = 640 - 30 - w;
-  float temp [max_points] = {0};
-  float apptemp [max_points] = {0};
-  for(byte r = 0; r<max_points; r++ )
+  float temp[max_points] = {0};
+  float apptemp[max_points] = {0};
+  for (byte r = 0; r < max_points; r++)
   {
     temp[r] = Hourly[r].temperature;
     apptemp[r] = Hourly[r].apparentTemperature;
   }
-  float range [2] = {0,0};
+  float range[2] = {0, 0};
   lineGraph(display, x1, 280, w, 80, temp, apptemp, range, max_points, currentTime, String(STR_TEMPERATURE) + " & " + String(STR_FEELS_LIKE), CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
   range[1] = 100;
-  float hum [max_points] = {0};
-  float prob [max_points] = {0};
-  for(byte r = 0; r<max_points; r++ )
+  float hum[max_points] = {0};
+  float prob[max_points] = {0};
+  for (byte r = 0; r < max_points; r++)
   {
-    hum[r]  = Hourly[r].humidity;
-    prob[r] = Hourly[r].precipProbability*100;
+    hum[r] = Hourly[r].humidity;
+    prob[r] = Hourly[r].precipProbability * 100;
   }
   lineGraph(display, x2, 280, w, 80, hum, prob, range, max_points, currentTime, String(STR_HUMIDITY) + " & " + String(STR_PRECIPITATION), CM_LINE, CM_BACKGROUND, CM_HIGHLIGHT);
 }
@@ -995,51 +1050,85 @@ void drawGraphs()
 /* Value with Title */
 void drawValue(uint16_t x, uint16_t y, float value, String title, String unit)
 {
-  int16_t  x0, y0;
+  int16_t x0, y0;
   uint16_t w, h;
 
   // Title
   display.setFont();
   display.cp437(true);
   display.setTextColor(CM_LINE);
-  display.setCursor(x,y);
+  display.setCursor(x, y);
   display.print(title);
 
   // Value
   display.setTextColor(CM_LINE);
   display.setFont(&OpenSans_Regular8pt7b);
-  display.setCursor(x+5,y+23);
-  if( title == STR_AIR_QUALITY)
+  display.setCursor(x + 5, y + 23);
+  if (title == STR_AIR_QUALITY)
   {
     w = -5;
   }
-  else if( title == STR_PRESSURE && strcmp(I18N_UNITS, "imperial") == 0)
+  else if (title == STR_PRESSURE && strcmp(I18N_UNITS, "imperial") == 0)
   {
-    display.print( String( value, 1 ) );
-    display.getTextBounds( String( value, 1 ), x+5, y+23, &x0, &y0, &w, &h);
+    display.print(String(value, 1));
+    display.getTextBounds(String(value, 1), x + 5, y + 23, &x0, &y0, &w, &h);
   }
-  else if( title == STR_VISIBILITY && value >= 10.0)
+  else if (title == STR_VISIBILITY && value >= 10.0)
   {
-    display.print( ">" + String( value, 0 ) );
-    display.getTextBounds( ">" + String( value, 0 ), x+5, y+23, &x0, &y0, &w, &h);
+    display.print(">" + String(value, 0));
+    display.getTextBounds(">" + String(value, 0), x + 5, y + 23, &x0, &y0, &w, &h);
   }
   else
-  { 
+  {
     display.print(String(lrint(value)));
-    display.getTextBounds(String(lrint(value)), x+5, y+23, &x0, &y0, &w, &h);
+    display.getTextBounds(String(lrint(value)), x + 5, y + 23, &x0, &y0, &w, &h);
   }
 
   // Unit
   display.setFont();
-  display.setCursor(x+5+w+6,y+17);
+  display.setCursor(x + 5 + w + 6, y + 17);
+  display.print(unit);
+}
+
+void drawValues(uint16_t x, uint16_t y, float values[], int size, String title, String unit)
+{
+  int16_t x0, y0;
+  uint16_t w, h;
+
+  // Title
+  display.setFont();
+  display.cp437(true);
+  display.setTextColor(CM_LINE);
+  display.setCursor(x, y);
+  display.print(title);
+
+  // Value
+  display.setTextColor(CM_LINE);
+  display.setFont(&OpenSans_Regular8pt7b);
+  display.setCursor(x + 5, y + 23);
+
+  String value = "";
+  for (int k = 0; k < size; ++k)
+  {
+    value += String(lrint(values[k]));
+    if (k < size - 1)
+      value += "/";
+  }
+
+  display.print(value);
+  display.getTextBounds(value, x + 5, y + 23, &x0, &y0, &w, &h);
+
+  // Unit
+  display.setFont();
+  display.setCursor(x + 5 + w + 6, y + 17);
   display.print(unit);
 }
 
 /* Location */
 void drawLocation()
 {
-  display.setFont(&OpenSans_Regular8pt7b); 
-  textRight(display, 620, 26, LOCATION_NAME );
+  display.setFont(&OpenSans_Regular8pt7b);
+  textRight(display, 620, 26, LOCATION_NAME);
   // textRight(display, 620, 26, "ABCDEFGHIJKLMNOPQRSTUVWXYZ" );
   // textRight(display, 620, 46, "abcdefghijklmnopqrstuvwxyz" );
   // textRight(display, 620, 66, "0123456789" );
@@ -1050,7 +1139,7 @@ void drawLocation()
 String cardinalDirection(int deg)
 {
   deg %= 360;
-  int direction = (int) ( (float) deg / 22.5);
+  int direction = (int)((float)deg / 22.5);
   Serial.println("Cardinal Direction Selector: ");
   return String(STR_CARDINAL_DIRECTIONS[direction]);
 }

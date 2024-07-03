@@ -34,4 +34,5 @@ void iconHouse(GxEPD2_GFX& display, String timeofday, int line = 0x0000, int bac
 
 void iconBatteryEmpty( GxEPD2_GFX& display, int line = 0x0000, int background = 0xFFFF, int highlight = 0xF800);
 
+void iconWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line = 0x0000, int background = 0xFFFF, int highlight = 0xF800);
 #endif // ICONSHEADER_H

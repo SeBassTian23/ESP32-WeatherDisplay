@@ -638,5 +638,13 @@ void iconBatteryEmpty( GxEPD2_GFX& display, int line, int background, int highli
 // {}
 
 // warning-triangle
-// void iconWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, String direction, int line, int background, int highlight)
-// {}
+void iconWarning(GxEPD2_GFX& display, uint16_t x, uint16_t y, uint16_t s, int line, int background, int highlight)
+{
+  // Triangle
+  display.fillTriangle(x+(s*0.5), y+(s*0.2), x+(s*0.15), y+(s*0.8), x+(s*0.85), y+(s*0.8), highlight);
+  display.drawTriangle(x+(s*0.5), y+(s*0.2), x+(s*0.15), y+(s*0.8), x+(s*0.85), y+(s*0.8), line);
+  // Exclamation Point
+  display.fillRoundRect (x+(s*0.425) + (s*0.15)/4 + 1, y+(s*0.375), (s*0.075), (s*0.275), (s*0.075)/2, line );
+  display.fillRoundRect (x+(s*0.425) + (s*0.15)/4 + 1, y+(s*0.68), (s*0.075), (s*0.075), (s*0.075)/2, line );
+  // display.fillCircle(x+(s*0.5)-1, y+(s*0.72), (s*0.0375), line);
+}
