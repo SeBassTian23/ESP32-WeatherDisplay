@@ -28,13 +28,13 @@ const char* STR_WEEKDAYS[7] PROGMEM = {
   "Friday",
   "Saturday"
 };
-const char* STR_CARDINAL_DIRECTIONS [16] = { 
+const char* STR_CARDINAL_DIRECTIONS [16] PROGMEM = { 
   "N", "NNE", "NE", "ENE", "E", "ESE",
   "SE", "SSE", "S", "SSW", "SW", "WSW",
   "W", "WNW", "NW", "NNW"
 };
 
-const char* STR_UV_INDEX_STEPS [5] = { 
+const char* STR_UV_INDEX_STEPS [5] PROGMEM = { 
   "Low",
   "Moderate",
   "High",
@@ -42,7 +42,7 @@ const char* STR_UV_INDEX_STEPS [5] = {
   "Extreme"
 };
 
-const char* STR_AIR_QUALITY_STEPS [5] = { 
+const char* STR_AIR_QUALITY_STEPS [5] PROGMEM = { 
   "Good",
   "Fair",
   "Moderate",
