@@ -53,14 +53,11 @@ GxEPD2_3C<GxEPD2_750c, GxEPD2_750c::HEIGHT> display(GxEPD2_750c(/*CS=*/15, /*DC=
 #include <math.h>
 
 /* Sensors */
-// #include "SparkFunHTU21D.h"
 #include "Adafruit_CCS811.h"
 #include "Adafruit_BMP280.h"
-
 #include "HTU21D.h"
 
-HTU21D htu;
-// HTU21D humiditySensor;
+HTU21D myHTU21D(HTU21D_RES_RH12_TEMP14);
 Adafruit_CCS811 ccs;
 Adafruit_BMP280 bmp;
 
@@ -115,7 +112,7 @@ Alert_type Alerts[max_alerts];
 int gmtOffset_sec;
 time_t currentTime;
 const char *summary;
-const char *summaryDay;
+// const char *summaryDay;
 const char *icon;
 int weatherID;
 float precipAccumulation;
@@ -196,15 +193,30 @@ void setup()
   // Power up sensors
   pinMode(POWER_SWITCH_PIN, OUTPUT);
   digitalWrite(POWER_SWITCH_PIN, LOW);
+  
+  // Might be needed for the sensors
+  delay(500);
 
-  // Setup
-  // humiditySensor.begin();
-  ccs.begin();
-  bmp.begin();
+  // Start HTU21D
+  if (!myHTU21D.begin())
+  {
+    Serial.println("Failed to start HTU21D, check wiring!");
+    while (1)
+      ;
+  }
 
+  // Start BMP280
   if (!bmp.begin())
   {
-    Serial.println("Could not find a valid BMP280 sensor, check wiring!");
+    Serial.println("Failed to start BMP280, check wiring!");
+    while (1)
+      ;
+  }
+
+  // Start CSS811
+  if (!ccs.begin())
+  {
+    Serial.println("Failed to start CSS811, check wiring!");
     while (1)
       ;
   }
@@ -466,7 +478,7 @@ bool parseOpenWeatherMap(String json, int req)
     cloudCover = doc["current"]["clouds"].as<float>();
     uvIndex = doc["current"]["uvi"].as<float>();
     visibility = doc["current"]["visibility"].as<float>();
-    summaryDay = doc["daily"][0]["summary"].as<const char *>();
+    // summaryDay = doc["daily"][0]["summary"].as<const char *>();
     temperatureMin = doc["daily"][0]["temp"]["min"].as<float>();
     temperatureMax = doc["daily"][0]["temp"]["max"].as<float>();
 
@@ -546,7 +558,7 @@ void dataToSerial()
   Serial.println("windSpeedGust: " + String(windSpeed));
   Serial.println("cloudCover: " + String(cloudCover));
   Serial.println("uvIndex: " + String(uvIndex));
-  Serial.println("summary day: " + String(summaryDay));
+  // Serial.println("summary day: " + String(summaryDay));
   Serial.println("temperatureMin: " + String(temperatureMin));
   Serial.println("temperatureMax: " + String(temperatureMax));
   Serial.println("precipAccumulation: " + String(precipAccumulation));
@@ -569,13 +581,8 @@ void dataToSerial()
 /* Get Readings from Sensor */
 void getSensorData()
 {
-  // insideHumidity = humiditySensor.readHumidity();
-  // insideTemperature = humiditySensor.readTemperature();
-  if (htu.measure())
-  {
-    insideHumidity = htu.getHumidity();
-    insideTemperature = htu.getTemperature();
-  }
+  insideHumidity = myHTU21D.readCompensatedHumidity();
+  insideTemperature = myHTU21D.readTemperature();
 
   // If temperature and Humidity are valid
   // The data can be used to set up the CSS811 sensor
@@ -611,6 +618,10 @@ void getSensorData()
       // VOC
       insideVOC = ccs.getTVOC();
     }
+  }
+  else
+  {
+    Serial.println("CSS811 read failed.");
   }
 }
 
